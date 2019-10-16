@@ -8,7 +8,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     preload() {
-        this.load.tilemapTiledJSON("mapa", "assets/tilemaps/tiled_map_json.json");
+        this.load.tilemapTiledJSON("mapa", "assets/tilemaps/zombie_map_1.json");
         this.load.image("tiles", "assets/tilesets/tuxmon-sample-32px.png");
         this.load.spritesheet('dude', 'assets/sprites/dude.png', {frameWidth: 32, frameHeight: 28});
     }
@@ -23,26 +23,31 @@ class SceneMain extends Phaser.Scene {
         // Parameters: layer name (or index) from Tiled, tileset, x, y
         const chaoLayer = map.createStaticLayer("chao", tileset, 0, 0);
         const mundoLayer = map.createStaticLayer("mundo", tileset, 0, 0);
+        const acimaLayer = map.createStaticLayer("acima", tileset, 0, 0);
 
         //set the colision tiles to actually collides
         mundoLayer.setCollisionByProperty({collides: true});
+        
+        //seto a profundidade da camada (no caso acima do player
+        acimaLayer.setDepth(10);
 
         //cria o jogador
-        this.player = new Player(this, 20, 480, 'dude');
+        const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
+        console.log(spawnPoint.x);
+        this.player = new Player(this, spawnPoint.x, spawnPoint.y, 'dude');
         this.animacoes();
 
         //teclado
         this.cursors = this.input.keyboard.createCursorKeys();
         this.configInputs();
 
-        const acimaLayer = map.createStaticLayer("acima", tileset, 0, 0);
+        //crio o layer que fica acima do jogador tetos e afins
 
         //colisao entre jogador de tiles
         this.physics.add.collider(this.player, mundoLayer);
 
         //cria a camera e manda perseguir o personagem no centro da tela
         this.camera = this.configCamera(map);
-
     }
 
     update() {
@@ -75,20 +80,20 @@ class SceneMain extends Phaser.Scene {
     animacoes() {
         this.game.anims.create({
             key: 'left',
-            frames: this.game.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, {start: 0, end: 3}),
             frameRate: 10,
             repeat: -1
         });
 
         this.game.anims.create({
             key: 'turn',
-            frames: [{key: 'dude', frame: 4}],
+            frames: [{key: this.player.Key, frame: 4}],
             frameRate: 20
         });
 
         this.game.anims.create({
             key: 'right',
-            frames: this.game.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, {start: 5, end: 8}),
             frameRate: 10,
             repeat: -1
         });
