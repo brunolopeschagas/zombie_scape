@@ -5,6 +5,7 @@ class SceneMain extends Phaser.Scene {
         this.player;
         this.cursors;
         this.camera;
+        this.qteZombies = 10;
     }
 
     preload() {
@@ -27,15 +28,37 @@ class SceneMain extends Phaser.Scene {
 
         //set the colision tiles to actually collides
         mundoLayer.setCollisionByProperty({collides: true});
-        
+
         //seto a profundidade da camada (no caso acima do player
         acimaLayer.setDepth(10);
 
         //cria o jogador
-        const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
-        console.log(spawnPoint.x);
+        const spawnPoint = map.findObject("Objects", obj => obj.name === "spawn_player");
+
         this.player = new Player(this, spawnPoint.x, spawnPoint.y, 'dude');
         this.animacoes();
+
+        this.enemies = this.add.group();
+
+        const strategy1 = new Strategy1();
+        const strategy2 = new Strategy2();
+
+        for (var i = 0; i < this.qteZombies; i++) {
+            let enemy = new Enemy(this, spawnPoint.x + 300 + (i * 10), spawnPoint.y + 300 + (i * 10), 'dude', 20);
+
+
+            enemy.comportamento = strategy1;
+            if (i % 2 === 0) {
+                enemy.comportamento = strategy2;
+            }
+
+            this.enemies.add(enemy);
+        }
+
+        //colisoes entre jogador e o inimigo
+        this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
+            console.log("pegou");
+        });
 
         //teclado
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -45,6 +68,7 @@ class SceneMain extends Phaser.Scene {
 
         //colisao entre jogador de tiles
         this.physics.add.collider(this.player, mundoLayer);
+        this.physics.add.collider(this.enemies, mundoLayer);
 
         //cria a camera e manda perseguir o personagem no centro da tela
         this.camera = this.configCamera(map);
@@ -54,6 +78,11 @@ class SceneMain extends Phaser.Scene {
         this.player.stop();
         this.movimentarPlayer();
         this.zoom();
+
+        for (var i = 0; i < this.enemies.getChildren().length; i++) {
+            let enemy = this.enemies.getChildren()[i];
+            enemy.perseguir(this.player, enemy);
+        }
     }
 
     movimentarPlayer() {
@@ -112,7 +141,7 @@ class SceneMain extends Phaser.Scene {
 
         return cam;
     }
-    
+
     zoom() {
         if (this.keyZ.isDown) {
             if (this.camera.zoom < 3) {

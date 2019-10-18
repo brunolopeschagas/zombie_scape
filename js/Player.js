@@ -4,6 +4,8 @@ class Player extends Entity {
         super(scene, x, y, key);
 
         this.key = key;
+        this.estamina = 100;
+        this.hidatacao = 100;
         this.velocidade = 100;
         this.vivo = true;
     }
@@ -20,12 +22,35 @@ class Player extends Entity {
     moveDown() {
         this.body.setVelocityY(this.velocidade);
     }
-    stop(){
+    stop() {
         this.body.setVelocity(0);
     }
-    
-    get Key(){
+
+    get Key() {
         return this.key;
     }
 
+    ganharEstamina(pQuantidade) {
+        this.estamina += pQuantidade;
+    }
+
+    ganharHidratacao(pQuantidade) {
+        this.hidatacao += pQuantidade;
+    }
+
+    get Hidratacao() {
+        return this.hidratacao;
+    }
+
+    get Estamina() {
+        return this.estamina;
+    }
+
+    get X() {
+        return this.x;
+    }
+
+    get Y() {
+        return this.y;
+    }
 }

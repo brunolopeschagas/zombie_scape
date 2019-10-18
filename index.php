@@ -9,7 +9,7 @@
     <body>
         <script src="js/Entity.js"></script>
         <script src="js/Player.js"></script>
-        <script src="js/Escada.js"></script>
+        <script src="js/Enemy.js"></script>
         <script src="js/SceneMainMenu.js"></script>
         <script src="js/SceneMain.js"></script>
         <script src="js/SceneGameOver.js"></script>
