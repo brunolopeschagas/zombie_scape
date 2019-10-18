@@ -24,43 +24,5 @@ class Enemy extends Entity {
     get Key() {
         return this.key;
     }
-
 }
 
-class Strategy1{
-     perseguir(pEntityPresa, pEntityCacador) {
-        var dx = pEntityPresa.x - pEntityCacador.x;
-        var dy = pEntityPresa.y - pEntityCacador.y;
-        var angle = Math.atan2(dy, dx);
-        pEntityCacador.body.setVelocity(
-                Math.cos(angle) * pEntityCacador.velocidade,
-                Math.sin(angle) * pEntityCacador.velocidade
-                );
-        if (this.x < pEntityPresa.x) {
-            //this.angle -= 5;
-            //vira para direita
-        } else {
-//            this.angle += 5;
-            //vira para esquerda
-        }
-    }
-}
-
-class Strategy2{
-    perseguir(pEntityPresa, pEntityCacador) {
-        var dx = pEntityPresa.x - pEntityCacador.x;
-        var dy = pEntityPresa.y - pEntityCacador.y;
-        var angle = Math.atan2(dy, dx);
-        pEntityCacador.body.setVelocity(
-                Math.cos(angle) * pEntityCacador.velocidade * 5,
-                Math.sin(angle) * pEntityCacador.velocidade * 5
-                );
-        if (this.x < pEntityPresa.x) {
-            //this.angle -= 5;
-            //vira para direita
-        } else {
-//            this.angle += 5;
-            //vira para esquerda
-        }
-    }
-}

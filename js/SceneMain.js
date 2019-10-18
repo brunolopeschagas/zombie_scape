@@ -38,20 +38,24 @@ class SceneMain extends Phaser.Scene {
         this.player = new Player(this, spawnPoint.x, spawnPoint.y, 'dude');
         this.animacoes();
 
+        //crio o grupo dos inimigos
         this.enemies = this.add.group();
 
-        const strategy1 = new Strategy1();
-        const strategy2 = new Strategy2();
+        //crio os comportamentos dos inimigos
+        const comportamentoLerdo = new ComportamentoLerdo();
+        const comportamentoLerdo2 = new ComportamentoLerdo2(200);
 
-        for (var i = 0; i < this.qteZombies; i++) {
-            let enemy = new Enemy(this, spawnPoint.x + 300 + (i * 10), spawnPoint.y + 300 + (i * 10), 'dude', 20);
-
-
-            enemy.comportamento = strategy1;
+        //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
+        for (let i = 0; i < this.qteZombies; i++) {
+            let randomX = Phaser.Math.Between(-500, 500);
+            let randomY = Phaser.Math.Between(-500, 500);
+            let randomSpeed = Phaser.Math.Between(10, 40);
+            
+            let enemy = new Enemy(this, spawnPoint.x + randomX, spawnPoint.y + randomY, 'dude', randomSpeed);
+            enemy.comportamento = comportamentoLerdo;
             if (i % 2 === 0) {
-                enemy.comportamento = strategy2;
+                enemy.comportamento = comportamentoLerdo2;
             }
-
             this.enemies.add(enemy);
         }
 
