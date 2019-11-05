@@ -1,4 +1,5 @@
 class ComportamentoLerdo {
+    
     perseguir(pEntityPresa, pEntityCacador) {
         let dx = pEntityPresa.x - pEntityCacador.x;
         let dy = pEntityPresa.y - pEntityCacador.y;

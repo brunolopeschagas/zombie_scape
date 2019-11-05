@@ -6,6 +6,9 @@ class SceneMain extends Phaser.Scene {
         this.cursors;
         this.camera;
         this.qteZombies = 10;
+        this.inicioJogo = new Date().getTime() / 1000;
+        this.timeElapsed;
+        this.timeElapsedText;
     }
 
     preload() {
@@ -15,6 +18,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
+
+
         const map = this.make.tilemap({key: "mapa"});
 
         // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
@@ -47,14 +52,20 @@ class SceneMain extends Phaser.Scene {
 
         //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
         for (let i = 0; i < this.qteZombies; i++) {
-            let randomX = Phaser.Math.Between(-500, 500);
-            let randomY = Phaser.Math.Between(-500, 500);
-            let randomSpeed = Phaser.Math.Between(10, 40);
-            
-            let enemy = new Enemy(this, spawnPoint.x + randomX, spawnPoint.y + randomY, 'dude', randomSpeed);
-            enemy.comportamento = comportamentoLerdo;
+            let randomSpawnX = Phaser.Math.Between(-500, 500);
+            let randomSpawnY = Phaser.Math.Between(-500, 500);
+
+            let enemy;
+            let randomSpeed;
+
             if (i % 2 === 0) {
+                randomSpeed = Phaser.Math.Between(5, 20);
+                enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
                 enemy.comportamento = comportamentoLerdo2;
+            } else {
+                randomSpeed = Phaser.Math.Between(2, 11);
+                enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
+                enemy.comportamento = comportamentoLerdo;
             }
             this.enemies.add(enemy);
         }
@@ -68,14 +79,17 @@ class SceneMain extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.configInputs();
 
-        //crio o layer que fica acima do jogador tetos e afins
-
-        //colisao entre jogador de tiles
+        //colisoes
         this.physics.add.collider(this.player, mundoLayer);
         this.physics.add.collider(this.enemies, mundoLayer);
 
         //cria a camera e manda perseguir o personagem no centro da tela
         this.camera = this.configCamera(map);
+
+        this.timeElapsedText = this.add.text(50, 50, 'Tempo:', {fontSize: '32px', fill: '#000'});
+        this.timeElapsedText.setScrollFactor(0);
+        this.timeElapsedText.setDepth(11);
+
     }
 
     update() {
@@ -87,6 +101,12 @@ class SceneMain extends Phaser.Scene {
             let enemy = this.enemies.getChildren()[i];
             enemy.perseguir(this.player, enemy);
         }
+
+        this.timeElapsedText.setText(this.relogio());
+    }
+    
+    relogio(){
+        return ((new Date().getTime() / 1000) - this.inicioJogo).toFixed(3);
     }
 
     movimentarPlayer() {
@@ -157,4 +177,5 @@ class SceneMain extends Phaser.Scene {
             }
         }
     }
+
 }
