@@ -1,5 +1,5 @@
-class ComportamentoLerdo {
-    
+class CompLerdo {
+
     perseguir(pEntityPresa, pEntityCacador) {
         let dx = pEntityPresa.x - pEntityCacador.x;
         let dy = pEntityPresa.y - pEntityCacador.y;
@@ -18,7 +18,7 @@ class ComportamentoLerdo {
     }
 }
 
-class ComportamentoLerdo2 {
+class CompPerseguir {
 
     constructor(pDistanciaPerseguir) {
         this.distanciaPerseguir = pDistanciaPerseguir;
@@ -39,7 +39,10 @@ class ComportamentoLerdo2 {
                     Math.cos(angle) * pEntityCacador.velocidade,
                     Math.sin(angle) * pEntityCacador.velocidade
                     );
+        } else {
+            pEntityCacador.body.setVelocity(0);
         }
     }
 }
+
 

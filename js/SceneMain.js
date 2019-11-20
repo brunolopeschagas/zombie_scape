@@ -8,7 +8,7 @@ class SceneMain extends Phaser.Scene {
         this.qteZombies = 10;
         this.inicioJogo = new Date().getTime() / 1000;
         this.timeElapsed;
-        this.timeElapsedText;
+        this.gameHud = new GameHud();
     }
 
     preload() {
@@ -47,8 +47,8 @@ class SceneMain extends Phaser.Scene {
         this.enemies = this.add.group();
 
         //crio os comportamentos dos inimigos
-        const comportamentoLerdo = new ComportamentoLerdo();
-        const comportamentoLerdo2 = new ComportamentoLerdo2(200);
+        const compLerdo = new CompLerdo();
+        const compPerseguir = new CompPerseguir(200);
 
         //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
         for (let i = 0; i < this.qteZombies; i++) {
@@ -61,18 +61,18 @@ class SceneMain extends Phaser.Scene {
             if (i % 2 === 0) {
                 randomSpeed = Phaser.Math.Between(5, 20);
                 enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = comportamentoLerdo2;
+                enemy.comportamento = compPerseguir;
             } else {
                 randomSpeed = Phaser.Math.Between(2, 11);
                 enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = comportamentoLerdo;
+                enemy.comportamento = compLerdo;
             }
             this.enemies.add(enemy);
         }
 
         //colisoes entre jogador e o inimigo
         this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
-            console.log("pegou");
+            player.morrer();
         });
 
         //teclado
@@ -86,26 +86,31 @@ class SceneMain extends Phaser.Scene {
         //cria a camera e manda perseguir o personagem no centro da tela
         this.camera = this.configCamera(map);
 
-        this.timeElapsedText = this.add.text(50, 50, 'Tempo:', {fontSize: '32px', fill: '#000'});
-        this.timeElapsedText.setScrollFactor(0);
-        this.timeElapsedText.setDepth(11);
+        //hud do game
+        this.gameHud.timeElapsedText = this.add.text(50, 50, '', {fontSize: '32px', fill: '#000'});
+        this.gameHud.timeElapsedText.setScrollFactor(0);
+        this.gameHud.timeElapsedText.setDepth(11);
+
+
 
     }
 
     update() {
-        this.player.stop();
-        this.movimentarPlayer();
-        this.zoom();
+        if (this.player.estaVivo()) {
+            this.player.stop();
+            this.movimentarPlayer();
+            this.gameHud.setTimeElapsedText(this.relogio());
 
-        for (var i = 0; i < this.enemies.getChildren().length; i++) {
-            let enemy = this.enemies.getChildren()[i];
-            enemy.perseguir(this.player, enemy);
+            let enemyLength = this.enemies.getChildren().length;
+            for (let i = 0; i < enemyLength; i++) {
+                let enemy = this.enemies.getChildren()[i];
+                enemy.perseguir(this.player, enemy);
+            }
         }
-
-        this.timeElapsedText.setText(this.relogio());
+        this.zoom();
     }
-    
-    relogio(){
+
+    relogio() {
         return ((new Date().getTime() / 1000) - this.inicioJogo).toFixed(3);
     }
 
@@ -177,5 +182,4 @@ class SceneMain extends Phaser.Scene {
             }
         }
     }
-
 }

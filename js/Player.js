@@ -53,4 +53,12 @@ class Player extends Entity {
     get Y() {
         return this.y;
     }
+    
+    morrer(){
+        this.vivo = false;
+    }
+    
+    estaVivo(){
+        return this.vivo;
+    }
 }
