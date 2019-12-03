@@ -1,7 +1,13 @@
 class GameHud {
 
-    constructor() {
-        this._timeElapsedText;
+    constructor(timeElapsedText, staminaText) {
+        this._timeElapsedText = timeElapsedText;
+        this._staminaText = staminaText;
+        
+        this._timeElapsedText.setScrollFactor(0);
+        this._timeElapsedText.setDepth(11);
+        this._staminaText.setScrollFactor(0);
+        this._staminaText.setDepth(11);
     }
 
     get timeElapsedText() {
@@ -9,11 +15,14 @@ class GameHud {
     }
     
     set timeElapsedText(timeElapsedText){
-        this._timeElapsedText = timeElapsedText;
+        this._timeElapsedText.setText('Time: ' + timeElapsedText.toFixed(3));
     }
     
-    setTimeElapsedText(timeElapsedText){
-        this._timeElapsedText.setText('time: ' + timeElapsedText);
+    get staminaText() {
+        return this._staminaText;
     }
-
+    
+    set staminaText(staminaText){
+        this._staminaText.setText('Stamina: ' + staminaText.toFixed(1));
+    }
 }

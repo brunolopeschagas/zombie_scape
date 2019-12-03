@@ -8,7 +8,7 @@ class SceneMain extends Phaser.Scene {
         this.qteZombies = 10;
         this.inicioJogo = new Date().getTime() / 1000;
         this.timeElapsed;
-        this.gameHud = new GameHud();
+        this.gameHud;
     }
 
     preload() {
@@ -19,36 +19,38 @@ class SceneMain extends Phaser.Scene {
 
     create() {
 
+        const STAMINA_DECREASE_TIME = 10000;
 
-        const map = this.make.tilemap({key: "mapa"});
+        const MAP = this.make.tilemap({key: "mapa"});
 
         // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
         // Phaser's cache (i.e. the name you used in preload)
-        const tileset = map.addTilesetImage("tiled_map", "tiles");
+        const TILESET = MAP.addTilesetImage("tiled_map", "tiles");
 
         // Parameters: layer name (or index) from Tiled, tileset, x, y
-        const chaoLayer = map.createStaticLayer("chao", tileset, 0, 0);
-        const mundoLayer = map.createStaticLayer("mundo", tileset, 0, 0);
-        const acimaLayer = map.createStaticLayer("acima", tileset, 0, 0);
+        const CHAO_LAYER = MAP.createStaticLayer("chao", TILESET, 0, 0);
+        const MUNDO_LAYER = MAP.createStaticLayer("mundo", TILESET, 0, 0);
+        const ACIMA_LAYER = MAP.createStaticLayer("acima", TILESET, 0, 0);
+        const DEPTH_ACIMA_LAYER = 10;
 
         //set the colision tiles to actually collides
-        mundoLayer.setCollisionByProperty({collides: true});
+        MUNDO_LAYER.setCollisionByProperty({collides: true});
 
         //seto a profundidade da camada (no caso acima do player
-        acimaLayer.setDepth(10);
+        ACIMA_LAYER.setDepth(DEPTH_ACIMA_LAYER);
 
         //cria o jogador
-        const spawnPoint = map.findObject("Objects", obj => obj.name === "spawn_player");
+        const SPAWN_POINT = MAP.findObject("Objects", obj => obj.name === "spawn_player");
 
-        this.player = new Player(this, spawnPoint.x, spawnPoint.y, 'dude');
+        this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 'dude');
         this.animacoes();
 
         //crio o grupo dos inimigos
         this.enemies = this.add.group();
 
         //crio os comportamentos dos inimigos
-        const compLerdo = new CompLerdo();
-        const compPerseguir = new CompPerseguir(200);
+        const COMP_LERDO = new CompLerdo();
+        const COMP_PERSEGUIR = new CompPerseguir(200);
 
         //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
         for (let i = 0; i < this.qteZombies; i++) {
@@ -60,12 +62,12 @@ class SceneMain extends Phaser.Scene {
 
             if (i % 2 === 0) {
                 randomSpeed = Phaser.Math.Between(5, 20);
-                enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = compPerseguir;
+                enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
+                enemy.comportamento = COMP_PERSEGUIR;
             } else {
                 randomSpeed = Phaser.Math.Between(2, 11);
-                enemy = new Enemy(this, spawnPoint.x + randomSpawnX, spawnPoint.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = compLerdo;
+                enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
+                enemy.comportamento = COMP_LERDO;
             }
             this.enemies.add(enemy);
         }
@@ -80,18 +82,29 @@ class SceneMain extends Phaser.Scene {
         this.configInputs();
 
         //colisoes
-        this.physics.add.collider(this.player, mundoLayer);
-        this.physics.add.collider(this.enemies, mundoLayer);
+        this.physics.add.collider(this.player, MUNDO_LAYER);
+        this.physics.add.collider(this.enemies, MUNDO_LAYER);
 
         //cria a camera e manda perseguir o personagem no centro da tela
-        this.camera = this.configCamera(map);
+        this.camera = this.configCamera(MAP);
 
         //hud do game
-        this.gameHud.timeElapsedText = this.add.text(50, 50, '', {fontSize: '32px', fill: '#000'});
-        this.gameHud.timeElapsedText.setScrollFactor(0);
-        this.gameHud.timeElapsedText.setDepth(11);
+        this.gameHud = new GameHud(
+                this.add.text(50, 50, '', {fontSize: '32px', fill: '#000'}),
+                this.add.text(50, 70, '', {fontSize: '32px', fill: '#0f0'})
+                );
 
+        this.gameHud.staminaText = this.player.lostStamina();
 
+        //tempo de decremento da stamina
+        this.time.addEvent({
+            delay: STAMINA_DECREASE_TIME,
+            callback: function () {
+                this.gameHud.staminaText = this.player.lostStamina();
+            },
+            callbackScope: this,
+            loop: true
+        });
 
     }
 
@@ -99,7 +112,7 @@ class SceneMain extends Phaser.Scene {
         if (this.player.estaVivo()) {
             this.player.stop();
             this.movimentarPlayer();
-            this.gameHud.setTimeElapsedText(this.relogio());
+            this.gameHud.timeElapsedText = this.relogio();
 
             let enemyLength = this.enemies.getChildren().length;
             for (let i = 0; i < enemyLength; i++) {
@@ -111,7 +124,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     relogio() {
-        return ((new Date().getTime() / 1000) - this.inicioJogo).toFixed(3);
+        return ((new Date().getTime() / 1000) - this.inicioJogo);
     }
 
     movimentarPlayer() {

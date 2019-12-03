@@ -4,7 +4,8 @@ class Player extends Entity {
         super(scene, x, y, key);
 
         this.key = key;
-        this.estamina = 100;
+        this._estamina = 100;
+        this._stamina_decrease = 0.1;
         this.hidatacao = 100;
         this.velocidade = 100;
         this.vivo = true;
@@ -30,8 +31,8 @@ class Player extends Entity {
         return this.key;
     }
 
-    ganharEstamina(pQuantidade) {
-        this.estamina += pQuantidade;
+    lostStamina() {
+        return this._estamina -= this._stamina_decrease;
     }
 
     ganharHidratacao(pQuantidade) {
@@ -42,8 +43,8 @@ class Player extends Entity {
         return this.hidratacao;
     }
 
-    get Estamina() {
-        return this.estamina;
+    get estamina() {
+        return this._estamina;
     }
 
     get X() {

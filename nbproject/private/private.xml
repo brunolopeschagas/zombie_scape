@@ -5,9 +5,7 @@
         <group>
             <file>file:/var/www/html/zombie_scape/js/GameHud.js</file>
             <file>file:/var/www/html/zombie_scape/js/SceneMain.js</file>
-            <file>file:/var/www/html/zombie_scape/js/comportamentos.js</file>
             <file>file:/var/www/html/zombie_scape/js/Player.js</file>
-            <file>file:/var/www/html/zombie_scape/js/Enemy.js</file>
         </group>
     </open-files>
 </project-private>
