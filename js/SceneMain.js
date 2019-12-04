@@ -61,11 +61,11 @@ class SceneMain extends Phaser.Scene {
             let randomSpeed;
 
             if (i % 2 === 0) {
-                randomSpeed = Phaser.Math.Between(5, 20);
+                randomSpeed = Phaser.Math.Between(COMP_PERSEGUIR.minSpeed, COMP_PERSEGUIR.maxSpeed);
                 enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
                 enemy.comportamento = COMP_PERSEGUIR;
             } else {
-                randomSpeed = Phaser.Math.Between(2, 11);
+                randomSpeed = Phaser.Math.Between(COMP_LERDO.minSpeed, COMP_LERDO.maxSpeed);
                 enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
                 enemy.comportamento = COMP_LERDO;
             }
@@ -94,25 +94,24 @@ class SceneMain extends Phaser.Scene {
                 this.add.text(50, 70, '', {fontSize: '32px', fill: '#0f0'})
                 );
 
-        this.gameHud.staminaText = this.player.lostStamina();
+        this.gameHud.showStamina(this.player.lostStamina());
 
         //tempo de decremento da stamina
         this.time.addEvent({
             delay: STAMINA_DECREASE_TIME,
             callback: function () {
-                this.gameHud.staminaText = this.player.lostStamina();
+                this.gameHud.showStamina(this.player.lostStamina());
             },
             callbackScope: this,
             loop: true
         });
-
     }
 
     update() {
-        if (this.player.estaVivo()) {
+        if (this.player.alive) {
             this.player.stop();
             this.movimentarPlayer();
-            this.gameHud.timeElapsedText = this.relogio();
+            this.gameHud.showTime(this.currentTime());
 
             let enemyLength = this.enemies.getChildren().length;
             for (let i = 0; i < enemyLength; i++) {
@@ -123,7 +122,7 @@ class SceneMain extends Phaser.Scene {
         this.zoom();
     }
 
-    relogio() {
+    currentTime() {
         return ((new Date().getTime() / 1000) - this.inicioJogo);
     }
 

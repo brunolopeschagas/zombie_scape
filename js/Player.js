@@ -6,41 +6,43 @@ class Player extends Entity {
         this.key = key;
         this._estamina = 100;
         this._stamina_decrease = 0.1;
-        this.hidatacao = 100;
-        this.velocidade = 100;
-        this.vivo = true;
+        this._hydration_decrease = 0.1;
+        this._hydration = 100;
+        this._speed = 100;
+        this._alive = true;
     }
 
     moveLeft() {
-        this.body.setVelocityX(-this.velocidade);
+        this.body.setVelocityX(-this._speed);
     }
     moveRight() {
-        this.body.setVelocityX(this.velocidade);
+        this.body.setVelocityX(this._speed);
     }
     moveUp() {
-        this.body.setVelocityY(-this.velocidade);
+        this.body.setVelocityY(-this._speed);
     }
     moveDown() {
-        this.body.setVelocityY(this.velocidade);
+        this.body.setVelocityY(this._speed);
     }
     stop() {
         this.body.setVelocity(0);
     }
 
-    get Key() {
-        return this.key;
-    }
 
     lostStamina() {
         return this._estamina -= this._stamina_decrease;
     }
 
-    ganharHidratacao(pQuantidade) {
-        this.hidatacao += pQuantidade;
+    dehydration() {
+        this._hydration -= this._hydration_decrease;
+    }
+    
+    get Key() {
+        return this.key;
     }
 
-    get Hidratacao() {
-        return this.hidratacao;
+    get hydration() {
+        return this._hydration;
     }
 
     get estamina() {
@@ -55,11 +57,12 @@ class Player extends Entity {
         return this.y;
     }
     
-    morrer(){
-        this.vivo = false;
+    get alive(){
+        return this._alive;
     }
     
-    estaVivo(){
-        return this.vivo;
+    morrer(){
+        this._alive = false;
     }
+    
 }
