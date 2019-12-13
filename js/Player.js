@@ -28,7 +28,6 @@ class Player extends Entity {
         this.body.setVelocity(0);
     }
 
-
     lostStamina() {
         return this._estamina -= this._stamina_decrease;
     }

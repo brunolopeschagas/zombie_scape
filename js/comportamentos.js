@@ -4,6 +4,16 @@ class Behavior {
         this._minSpeed = pMinSpeed;
     }
 
+    perseguirCore(pPresa, pCacador) {
+        let dx = pPresa.x - pCacador.x;
+        let dy = pPresa.y - pCacador.y;
+        let angle = Math.atan2(dy, dx);
+        pCacador.body.setVelocity(
+                Math.cos(angle) * pCacador.velocidade,
+                Math.sin(angle) * pCacador.velocidade
+                );
+    }
+
     get maxSpeed() {
         return this._maxSpeed;
     }
@@ -17,17 +27,11 @@ class Behavior {
 class CompLerdo extends Behavior {
 
     constructor() {
-        super(5, 25);
+        super(5, 15);
     }
 
-    perseguir(pEntityPresa, pEntityCacador) {
-        let dx = pEntityPresa.x - pEntityCacador.x;
-        let dy = pEntityPresa.y - pEntityCacador.y;
-        let angle = Math.atan2(dy, dx);
-        pEntityCacador.body.setVelocity(
-                Math.cos(angle) * pEntityCacador.velocidade,
-                Math.sin(angle) * pEntityCacador.velocidade
-                );
+    agir(pEntityPresa, pEntityCacador) {
+        super.perseguirCore(pEntityPresa, pEntityCacador);
         if (this.x < pEntityPresa.x) {
             //this.angle -= 5;
             //vira para direita
@@ -45,7 +49,7 @@ class CompPerseguir extends Behavior {
         this.distanciaPerseguir = pDistanciaPerseguir;
     }
 
-    perseguir(pEntityPresa, pEntityCacador) {
+    agir(pEntityPresa, pEntityCacador) {
         if (Phaser.Math.Distance.Between(
                 pEntityCacador.x,
                 pEntityCacador.y,
@@ -53,17 +57,30 @@ class CompPerseguir extends Behavior {
                 pEntityPresa.y
                 ) < this.distanciaPerseguir) {
 
-            let dx = pEntityPresa.x - pEntityCacador.x;
-            let dy = pEntityPresa.y - pEntityCacador.y;
-            let angle = Math.atan2(dy, dx);
-            pEntityCacador.body.setVelocity(
-                    Math.cos(angle) * pEntityCacador.velocidade,
-                    Math.sin(angle) * pEntityCacador.velocidade
-                    );
+            super.perseguirCore(pEntityPresa, pEntityCacador);
+
         } else {
             pEntityCacador.body.setVelocity(0);
         }
     }
+
+}
+
+class CompVagar extends Behavior {
+
+    constructor() {
+        super(10, 60);
+    }
+
+    agir(pEntityPresa, pEntityCacador) {
+        
+        super.perseguirCore(pEntityPresa, pEntityCacador);
+        
+        if(pEntityCacador.body.blocked.down){
+            console.log(pEntityCacador.key);
+        }
+    }
+
 }
 
 

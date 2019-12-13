@@ -17,8 +17,8 @@ class Enemy extends Entity {
         return this._comportamento;
     }
     
-    perseguir(pEntityPresa, pEntityCacador){
-        this._comportamento.perseguir(pEntityPresa, pEntityCacador);
+    agir(pEntityPresa, pEntityCacador){
+        this._comportamento.agir(pEntityPresa, pEntityCacador);
     }
 
     get Key() {

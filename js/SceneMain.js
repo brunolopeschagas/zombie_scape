@@ -5,7 +5,7 @@ class SceneMain extends Phaser.Scene {
         this.player;
         this.cursors;
         this.camera;
-        this.qteZombies = 10;
+        this.qteZombies = 2;
         this.inicioJogo = new Date().getTime() / 1000;
         this.timeElapsed;
         this.gameHud;
@@ -51,6 +51,7 @@ class SceneMain extends Phaser.Scene {
         //crio os comportamentos dos inimigos
         const COMP_LERDO = new CompLerdo();
         const COMP_PERSEGUIR = new CompPerseguir(200);
+        const COMP_VAGAR = new CompVagar();
 
         //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
         for (let i = 0; i < this.qteZombies; i++) {
@@ -63,11 +64,11 @@ class SceneMain extends Phaser.Scene {
             if (i % 2 === 0) {
                 randomSpeed = Phaser.Math.Between(COMP_PERSEGUIR.minSpeed, COMP_PERSEGUIR.maxSpeed);
                 enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = COMP_PERSEGUIR;
+                enemy.comportamento = COMP_VAGAR;
             } else {
                 randomSpeed = Phaser.Math.Between(COMP_LERDO.minSpeed, COMP_LERDO.maxSpeed);
                 enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
-                enemy.comportamento = COMP_LERDO;
+                enemy.comportamento = COMP_VAGAR;
             }
             this.enemies.add(enemy);
         }
@@ -116,7 +117,7 @@ class SceneMain extends Phaser.Scene {
             let enemyLength = this.enemies.getChildren().length;
             for (let i = 0; i < enemyLength; i++) {
                 let enemy = this.enemies.getChildren()[i];
-                enemy.perseguir(this.player, enemy);
+                enemy.agir(this.player, enemy);
             }
         }
         this.zoom();
