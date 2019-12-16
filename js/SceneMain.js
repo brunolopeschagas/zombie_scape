@@ -5,7 +5,7 @@ class SceneMain extends Phaser.Scene {
         this.player;
         this.cursors;
         this.camera;
-        this.qteZombies = 2;
+        this.qteZombies = 3;
         this.inicioJogo = new Date().getTime() / 1000;
         this.timeElapsed;
         this.gameHud;
@@ -42,7 +42,7 @@ class SceneMain extends Phaser.Scene {
         //cria o jogador
         const SPAWN_POINT = MAP.findObject("Objects", obj => obj.name === "spawn_player");
 
-        this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 'dude');
+        this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 100, 'dude');
         this.animacoes();
 
         //crio o grupo dos inimigos
@@ -118,6 +118,7 @@ class SceneMain extends Phaser.Scene {
             for (let i = 0; i < enemyLength; i++) {
                 let enemy = this.enemies.getChildren()[i];
                 enemy.agir(this.player, enemy);
+                enemy.moveUp();
             }
         }
         this.zoom();

@@ -70,15 +70,20 @@ class CompVagar extends Behavior {
 
     constructor() {
         super(10, 60);
+        this.direction = 1;
     }
 
     agir(pEntityPresa, pEntityCacador) {
-        
-        super.perseguirCore(pEntityPresa, pEntityCacador);
-        
-        if(pEntityCacador.body.blocked.down){
-            console.log(pEntityCacador.key);
+
+        pEntityCacador.stop();
+        if (pEntityCacador.body.blocked.up) {
+            pEntityCacador.moveUp();
+            this.direction = Phaser.Math.Between(1, 4);
+
         }
+
+//        console.log(pEntityCacador.body.blocked);
+        console.log(this.direction);
     }
 
 }
