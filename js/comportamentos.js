@@ -1,4 +1,5 @@
 class Behavior {
+    
     constructor(pMinSpeed, pMaxSpeed) {
         this._maxSpeed = pMaxSpeed;
         this._minSpeed = pMinSpeed;
@@ -9,8 +10,8 @@ class Behavior {
         let dy = pPresa.y - pCacador.y;
         let angle = Math.atan2(dy, dx);
         pCacador.body.setVelocity(
-                Math.cos(angle) * pCacador.velocidade,
-                Math.sin(angle) * pCacador.velocidade
+                Math.cos(angle) * pCacador.speed,
+                Math.sin(angle) * pCacador.speed
                 );
     }
 
@@ -21,7 +22,6 @@ class Behavior {
     get minSpeed() {
         return this._minSpeed;
     }
-
 }
 
 class CompLerdo extends Behavior {
@@ -31,7 +31,7 @@ class CompLerdo extends Behavior {
     }
 
     agir(pEntityPresa, pEntityCacador) {
-        super.perseguirCore(pEntityPresa, pEntityCacador);
+        this.perseguirCore(pEntityPresa, pEntityCacador);
         if (this.x < pEntityPresa.x) {
             //this.angle -= 5;
             //vira para direita
@@ -60,32 +60,7 @@ class CompPerseguir extends Behavior {
             super.perseguirCore(pEntityPresa, pEntityCacador);
 
         } else {
-            pEntityCacador.body.setVelocity(0);
+            pEntityCacador.stop();
         }
     }
-
 }
-
-class CompVagar extends Behavior {
-
-    constructor() {
-        super(10, 60);
-        this.direction = 1;
-    }
-
-    agir(pEntityPresa, pEntityCacador) {
-
-        pEntityCacador.stop();
-        if (pEntityCacador.body.blocked.up) {
-            pEntityCacador.moveUp();
-            this.direction = Phaser.Math.Between(1, 4);
-
-        }
-
-//        console.log(pEntityCacador.body.blocked);
-        console.log(this.direction);
-    }
-
-}
-
-
