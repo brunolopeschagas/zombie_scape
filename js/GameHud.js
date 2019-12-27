@@ -1,8 +1,10 @@
 class GameHud {
 
-    constructor(timeElapsedText, staminaText) {
-        this._timeElapsedText = timeElapsedText;
-        this._staminaText = staminaText;
+    constructor(pScene) {
+        this._scene = pScene;
+        
+        this._timeElapsedText = this._scene.add.text(30, 10, '', {fontSize: '32px', fill: '#000'});
+        this._staminaText = this._scene.add.text(30, 40, '', {fontSize: '32px', fill: '#000'});
 
         this._timeElapsedText.setScrollFactor(0);
         this._timeElapsedText.setDepth(11);
@@ -13,7 +15,7 @@ class GameHud {
     showTime(timeElapsedText) {
         this._timeElapsedText.setText('Time: ' + timeElapsedText.toFixed(3));
     }
-    
+
     showStamina(staminaText) {
         this._staminaText.setText('Stamina: ' + staminaText.toFixed(1));
     }

@@ -1,11 +1,11 @@
 class Behavior {
-    
+
     constructor(pMinSpeed, pMaxSpeed) {
         this._maxSpeed = pMaxSpeed;
         this._minSpeed = pMinSpeed;
     }
 
-    perseguirCore(pPresa, pCacador) {
+    chaseCore(pPresa, pCacador) {
         let dx = pPresa.x - pCacador.x;
         let dy = pPresa.y - pCacador.y;
         let angle = Math.atan2(dy, dx);
@@ -13,6 +13,18 @@ class Behavior {
                 Math.cos(angle) * pCacador.speed,
                 Math.sin(angle) * pCacador.speed
                 );
+    }
+
+    chaseAnimation(pPresa, pCacador) {
+        if (pCacador.x < pPresa.x) {
+            pCacador.anims.play('right', true);
+        } else {
+            pCacador.anims.play('left', true);
+        }
+    }
+    
+    stopAnimation(pCacador){
+        pCacador.anims.play('turn', true);
     }
 
     get maxSpeed() {
@@ -31,14 +43,8 @@ class CompLerdo extends Behavior {
     }
 
     agir(pEntityPresa, pEntityCacador) {
-        this.perseguirCore(pEntityPresa, pEntityCacador);
-        if (this.x < pEntityPresa.x) {
-            //this.angle -= 5;
-            //vira para direita
-        } else {
-//            this.angle += 5;
-            //vira para esquerda
-        }
+        this.chaseCore(pEntityPresa, pEntityCacador);
+        this.chaseAnimation(pEntityPresa, pEntityCacador);
     }
 }
 
@@ -57,10 +63,12 @@ class CompPerseguir extends Behavior {
                 pEntityPresa.y
                 ) < this.distanciaPerseguir) {
 
-            super.perseguirCore(pEntityPresa, pEntityCacador);
+            super.chaseCore(pEntityPresa, pEntityCacador);
+            this.chaseAnimation(pEntityPresa, pEntityCacador);
 
         } else {
             pEntityCacador.stop();
+            this.stopAnimation(pEntityCacador);
         }
     }
 }

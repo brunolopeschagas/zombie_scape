@@ -5,20 +5,19 @@ class Player extends Entity {
 
         this.key = key;
         this._estamina = 100;
-        this._stamina_decrease = 0.1;
-        this._hydration_decrease = 0.1;
+        this._staminaDecrease = 0.1;
+        this._hydrationDecrease = 0.1;
         this._hydration = 100;
         this._alive = true;
         this._speed = speed;
     }
 
-
     lostStamina() {
-        return this._estamina -= this._stamina_decrease;
+        return this._estamina -= this._staminaDecrease;
     }
 
     dehydration() {
-        this._hydration -= this._hydration_decrease;
+        this._hydration -= this._hydrationDecrease;
     }
     
     get Key() {
@@ -45,7 +44,7 @@ class Player extends Entity {
         return this._alive;
     }
     
-    morrer(){
+    die(){
         this._alive = false;
     }
     

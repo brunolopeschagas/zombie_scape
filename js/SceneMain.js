@@ -5,7 +5,7 @@ class SceneMain extends Phaser.Scene {
         this.player;
         this.cursors;
         this.camera;
-        this.qteZombies = 15;
+        this.qteZombies = 7;
         this.inicioJogo = new Date().getTime() / 1000;
         this.timeElapsed;
         this.gameHud;
@@ -28,22 +28,22 @@ class SceneMain extends Phaser.Scene {
         const TILESET = MAP.addTilesetImage("tiled_map", "tiles");
 
         // Parameters: layer name (or index) from Tiled, tileset, x, y
-        const CHAO_LAYER = MAP.createStaticLayer("chao", TILESET, 0, 0);
-        const MUNDO_LAYER = MAP.createStaticLayer("mundo", TILESET, 0, 0);
-        const ACIMA_LAYER = MAP.createStaticLayer("acima", TILESET, 0, 0);
-        const DEPTH_ACIMA_LAYER = 10;
+        const GROUND_LAYER = MAP.createStaticLayer("chao", TILESET);
+        const PLAYER_LAYER = MAP.createStaticLayer("mundo", TILESET);
+        const ABOVE_LAYER = MAP.createStaticLayer("acima", TILESET);
+        const DEPTH_ABOVE_LAYER = 10;
 
         //set the colision tiles to actually collides
-        MUNDO_LAYER.setCollisionByProperty({collides: true});
+        PLAYER_LAYER.setCollisionByProperty({collides: true});
 
         //seto a profundidade da camada (no caso acima do player
-        ACIMA_LAYER.setDepth(DEPTH_ACIMA_LAYER);
+        ABOVE_LAYER.setDepth(DEPTH_ABOVE_LAYER);
 
         //cria o jogador
         const SPAWN_POINT = MAP.findObject("Objects", obj => obj.name === "spawn_player");
 
-        this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 100, 'dude');
-        this.animacoes();
+        this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 70, 'dude');
+        this.animations();
 
         //crio o grupo dos inimigos
         this.enemies = this.add.group();
@@ -74,7 +74,7 @@ class SceneMain extends Phaser.Scene {
 
         //colisoes entre jogador e o inimigo
         this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
-            player.morrer();
+            player.die();
         });
 
         //teclado
@@ -82,17 +82,14 @@ class SceneMain extends Phaser.Scene {
         this.configInputs();
 
         //colisoes
-        this.physics.add.collider(this.player, MUNDO_LAYER);
-        this.physics.add.collider(this.enemies, MUNDO_LAYER);
+        this.physics.add.collider(this.player, PLAYER_LAYER);
+        this.physics.add.collider(this.enemies, PLAYER_LAYER);
 
         //cria a camera e manda perseguir o personagem no centro da tela
         this.camera = this.configCamera(MAP);
 
         //hud do game
-        this.gameHud = new GameHud(
-                this.add.text(50, 50, '', {fontSize: '32px', fill: '#000'}),
-                this.add.text(50, 70, '', {fontSize: '32px', fill: '#0f0'})
-                );
+        this.gameHud = new GameHud(this);
 
         this.gameHud.showStamina(this.player.lostStamina());
 
@@ -105,12 +102,14 @@ class SceneMain extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+        
+        this.mapData(MAP);
     }
 
     update() {
         if (this.player.alive) {
             this.player.stop();
-            this.movimentarPlayer();
+            this.movePlayer();
             this.gameHud.showTime(this.currentTime());
 
             let enemyLength = this.enemies.getChildren().length;
@@ -118,15 +117,17 @@ class SceneMain extends Phaser.Scene {
                 let enemy = this.enemies.getChildren()[i];
                 enemy.agir(this.player, enemy);
             }
+        }else{
+            this.scene.start("SceneGameOver");
         }
-        this.zoom();
+//        this.zoom();
     }
 
     currentTime() {
         return ((new Date().getTime() / 1000) - this.inicioJogo);
     }
 
-    movimentarPlayer() {
+    movePlayer() {
         if (this.cursors.left.isDown) {
             this.player.moveLeft();
             this.player.anims.play('left', true);
@@ -147,7 +148,7 @@ class SceneMain extends Phaser.Scene {
 //        }
     }
 
-    animacoes() {
+    animations() {
         this.game.anims.create({
             key: 'left',
             frames: this.game.anims.generateFrameNumbers(this.player.Key, {start: 0, end: 3}),
@@ -178,9 +179,12 @@ class SceneMain extends Phaser.Scene {
         let cam = this.cameras.main;
         cam.startFollow(this.player);
         cam.setBounds(0, 0, pMap.widthInPixels, pMap.heightInPixels);
-        cam.setZoom(3);
-
+//        cam.setZoom(3);
         return cam;
+    }
+    
+    mapData(pMap){
+        console.log(pMap);
     }
 
     zoom() {
@@ -194,4 +198,5 @@ class SceneMain extends Phaser.Scene {
             }
         }
     }
+    
 }

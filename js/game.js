@@ -1,6 +1,6 @@
 
-const WORLD_WIDTH = 900;
-const WORLD_HEIGHT = 720;
+const WORLD_WIDTH = 720;
+const WORLD_HEIGHT = 480;
 //const WORLD_WIDTH = window.innerWidth * window.devicePixelRatio;
 //const WORLD_HEIGHT = window.innerHeight * window.devicePixelRatio;
 //const SCALE_RATIO = WORLD_WIDTH / WORLD_HEIGHT;

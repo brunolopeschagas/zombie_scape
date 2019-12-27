@@ -13,36 +13,36 @@ class SceneGameOver extends Phaser.Scene {
         });
         this.title.setOrigin(0.5);
 
-        this.sfx = {
-            btnOver: this.sound.add("jump"),
-            btnDown: this.sound.add("walk")
-        };
+//        this.sfx = {
+//            btnOver: this.sound.add("jump"),
+//            btnDown: this.sound.add("walk")
+//        };
 
-        this.btnRestart = this.add.sprite(
-                this.game.config.width * 0.5,
-                this.game.config.height * 0.5,
-                "sprBtnRestart"
-                );
+//        this.btnRestart = this.add.sprite(
+//                this.game.config.width * 0.5,
+//                this.game.config.height * 0.5,
+//                "sprBtnRestart"
+//                );
 
-        this.btnRestart.setInteractive();
+//        this.btnRestart.setInteractive();
 
-        this.btnRestart.on("pointerover", function () {
-            this.btnRestart.setTexture("sprBtnRestartHover"); // set the button texture to sprBtnPlayHover
-            this.sfx.btnOver.play(); // play the button over sound
-        }, this);
-
-        this.btnRestart.on("pointerout", function () {
-            this.setTexture("sprBtnRestart");
-        });
-
-        this.btnRestart.on("pointerdown", function () {
-            this.btnRestart.setTexture("sprBtnRestartDown");
-            this.sfx.btnDown.play();
-        }, this);
-
-        this.btnRestart.on("pointerup", function () {
-            this.btnRestart.setTexture("sprBtnRestart");
-            this.scene.start("SceneMain");
-        }, this);
+//        this.btnRestart.on("pointerover", function () {
+//            this.btnRestart.setTexture("sprBtnRestartHover"); // set the button texture to sprBtnPlayHover
+//            this.sfx.btnOver.play(); // play the button over sound
+//        }, this);
+//
+//        this.btnRestart.on("pointerout", function () {
+//            this.setTexture("sprBtnRestart");
+//        });
+//
+//        this.btnRestart.on("pointerdown", function () {
+//            this.btnRestart.setTexture("sprBtnRestartDown");
+//            this.sfx.btnDown.play();
+//        }, this);
+//
+//        this.btnRestart.on("pointerup", function () {
+//            this.btnRestart.setTexture("sprBtnRestart");
+//            this.scene.start("SceneMain");
+//        }, this);
     }
 }
