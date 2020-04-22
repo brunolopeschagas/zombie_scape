@@ -12,6 +12,8 @@
         <script src="js/comportamentos.js"></script>
         <script src="js/Enemy.js"></script>
         <script src="js/GameHud.js"></script>
+        <script src="js/inputs/Inputs.js"></script>
+        <script src="js/inputs/InputKeyBoard.js"></script>
         <script src="js/SceneMainMenu.js"></script>
         <script src="js/SceneMain.js"></script>
         <script src="js/SceneGameOver.js"></script>

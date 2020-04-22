@@ -4,6 +4,7 @@ class SceneMain extends Phaser.Scene {
         super({key: "SceneMain"});
         this.player;
         this.cursors;
+        this.inputs;
         this.camera;
         this.qteZombies = 7;
         this.inicioJogo = new Date().getTime() / 1000;
@@ -44,14 +45,14 @@ class SceneMain extends Phaser.Scene {
 
         this.player = new Player(this, SPAWN_POINT.x, SPAWN_POINT.y, 70, 'dude');
         this.animations();
-
+        
         //crio o grupo dos inimigos
         this.enemies = this.add.group();
-
+        
         //crio os comportamentos dos inimigos
         const COMP_LERDO = new CompLerdo();
         const COMP_PERSEGUIR = new CompPerseguir(200);
-
+        
         //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
         for (let i = 0; i < this.qteZombies; i++) {
             let randomSpawnX = Phaser.Math.Between(-500, 500);
@@ -59,7 +60,7 @@ class SceneMain extends Phaser.Scene {
 
             let enemy;
             let randomSpeed;
-
+            
             if (i % 2 === 0) {
                 randomSpeed = Phaser.Math.Between(COMP_PERSEGUIR.minSpeed, COMP_PERSEGUIR.maxSpeed);
                 enemy = new Enemy(this, SPAWN_POINT.x + randomSpawnX, SPAWN_POINT.y + randomSpawnY, 'dude', randomSpeed);
@@ -71,15 +72,14 @@ class SceneMain extends Phaser.Scene {
             }
             this.enemies.add(enemy);
         }
-
+        
         //colisoes entre jogador e o inimigo
         this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
             player.die();
         });
-
+        
         //teclado
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.configInputs();
+        this.inputs = new InputKeyBoard(this.input.keyboard.createCursorKeys());
 
         //colisoes
         this.physics.add.collider(this.player, PLAYER_LAYER);
@@ -120,7 +120,6 @@ class SceneMain extends Phaser.Scene {
         }else{
             this.scene.start("SceneGameOver");
         }
-//        this.zoom();
     }
 
     currentTime() {
@@ -128,24 +127,21 @@ class SceneMain extends Phaser.Scene {
     }
 
     movePlayer() {
-        if (this.cursors.left.isDown) {
+        if (this.inputs.moveLeft()) {
             this.player.moveLeft();
             this.player.anims.play('left', true);
-        } else if (this.cursors.right.isDown) {
+        } else if (this.inputs.moveRight()) {
             this.player.moveRight();
             this.player.anims.play('right', true);
-        } else if (this.cursors.up.isDown) {
+        } else if (this.inputs.moveUp()) {
             this.player.moveUp();
             this.player.anims.play('turn', true);
-        } else if (this.cursors.down.isDown) {
+        } else if (this.inputs.moveDown()) {
             this.player.moveDown();
             this.player.anims.play('turn', true);
         } else {
             this.player.anims.play('turn');
         }
-//        if (this.cursors.up.isDown && this.player.body.blocked.down) {
-//            this.player.setVelocityY(this.auturaPulo);
-//        }
     }
 
     animations() {
@@ -170,33 +166,14 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
-    configInputs() {
-        this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    }
-
     configCamera(pMap) {
         let cam = this.cameras.main;
         cam.startFollow(this.player);
         cam.setBounds(0, 0, pMap.widthInPixels, pMap.heightInPixels);
-//        cam.setZoom(3);
         return cam;
     }
     
     mapData(pMap){
         console.log(pMap);
     }
-
-    zoom() {
-        if (this.keyZ.isDown) {
-            if (this.camera.zoom < 3) {
-                this.camera.setZoom(this.camera.zoom + 0.1);
-            }
-        } else if (this.keyA.isDown) {
-            if (this.camera.zoom > 1) {
-                this.camera.setZoom(this.camera.zoom - 0.1);
-            }
-        }
-    }
-    
 }
