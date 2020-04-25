@@ -6,25 +6,25 @@ class SceneMain extends Phaser.Scene {
         this.cursors;
         this.inputs;
         this.camera;
-        this.qteZombies = 7;
-        this.inicioJogo = new Date().getTime() / 1000;
+        this.quantitiOfZombies = 7;
+        this.gameBegin = new Date().getTime() / 1000;
         this.timeElapsed;
         this.gameHud;
-        this.spawn_point;
+        this.spawnPoint;
         this.spriteSheeName = 'dude';
     }
 
     preload() {
-        this.carregarMapa();
-        this.carregarSpriteSheets();
+        this.loadMap();
+        this.loadSpriteSheets();
     }
 
-    carregarMapa() {
+    loadMap() {
         this.load.tilemapTiledJSON("mapa", "assets/tilemaps/zombie_map_1.json");
         this.load.image("tiles", "assets/tilesets/tuxmon-sample-32px.png");
     }
 
-    carregarSpriteSheets() {
+    loadSpriteSheets() {
         this.load.spritesheet(this.spriteSheeName, 'assets/sprites/dude.png', { frameWidth: 32, frameHeight: 28 });
     }
 
@@ -48,45 +48,25 @@ class SceneMain extends Phaser.Scene {
         //seto a profundidade da camada (no caso acima do player
         ABOVE_LAYER.setDepth(DEPTH_ABOVE_LAYER);
 
-        //cria o jogador
-        this.spawn_point = MAP.findObject("Objects", obj => obj.name === "spawn_player");
-
-        this.player = new Player(this, this.spawn_point.x, this.spawn_point.y, 70, this.spriteSheeName);
-        this.criarAnimacoes();
-
-        //crio o grupo dos inimigos
-        this.enemies = this.add.group();
-
-        this.criarInimigos();
-
-        //colisoes entre jogador e o inimigo
-        this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
-            player.die();
-        });
+        this.createPlayer(MAP.findObject("Objects", obj => obj.name === "spawn_player"))
+        this.createEnemies();
+        this.createColisionPlayerEnemy()
+        this.createColisionsEntitiesLayer(PLAYER_LAYER);
 
         //teclado
         this.inputs = new InputKeyBoard(this.input.keyboard.createCursorKeys());
-
-        //colisoes
-        this.physics.add.collider(this.player, PLAYER_LAYER);
-        this.physics.add.collider(this.enemies, PLAYER_LAYER);
-
-        //cria a camera e manda perseguir o personagem no centro da tela
-        this.camera = this.criarCamera(MAP);
-
-        this.criarGameHud();
-
-        //tempo de decremento da stamina
-        this.time.addEvent({
-            delay: STAMINA_DECREASE_TIME,
-            callback: function () {
-                this.gameHud.showStamina(this.player.lostStamina());
-            },
-            callbackScope: this,
-            loop: true
-        });
+        
+        this.createCamera(MAP);
+        this.createGameHud();
+        this.createStaminaDecreaseEvent(STAMINA_DECREASE_TIME);
 
         this.mapData(MAP);
+    }
+
+    createPlayer(startPoint) {
+        this.spawnPoint = startPoint;
+        this.player = new Player(this, this.spawnPoint.x, this.spawnPoint.y, 70, this.spriteSheeName);
+        this.criarAnimacoes();
     }
 
     criarAnimacoes() {
@@ -109,44 +89,61 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
-    criarInimigos() {
-        //crio os comportamentos dos inimigos
+    createEnemies() {
+        this.enemies = this.add.group();
         const COMP_LERDO = new CompLerdo();
         const COMP_PERSEGUIR = new CompPerseguir(200);
         let enemy = null;
-
-        //crio e adiciono os inimigos ao grupo de inimigos e seto seus comportamentos
-        for (let i = 0; i < this.qteZombies; i++) {
+        for (let i = 0; i < this.quantitiOfZombies; i++) {
             if (i % 2 === 0) {
-                enemy = this.criarComportamentoInimigo(COMP_PERSEGUIR);
+                enemy = this.createEnemiesBehavior(COMP_PERSEGUIR);
             } else {
-                enemy = this.criarComportamentoInimigo(COMP_LERDO);
+                enemy = this.createEnemiesBehavior(COMP_LERDO);
             }
             this.enemies.add(enemy);
         }
     }
 
-    criarComportamentoInimigo(comportamento) {
+    createColisionPlayerEnemy() {
+        this.physics.add.overlap(this.player, this.enemies, function (player, enemy) {
+            player.die();
+        });
+    }
+
+    createColisionsEntitiesLayer(layer){
+        this.physics.add.collider(this.player, layer);
+        this.physics.add.collider(this.enemies, layer);
+    }
+
+    createEnemiesBehavior(comportamento) {
         let randomSpawnX = Phaser.Math.Between(-500, 500);
         let randomSpawnY = Phaser.Math.Between(-500, 500);
         let randomSpeed = Phaser.Math.Between(comportamento.minSpeed, comportamento.maxSpeed);
-        let enemy = new Enemy(this, this.spawn_point.x + randomSpawnX, this.spawn_point.y + randomSpawnY, this.spriteSheeName, randomSpeed);
+        let enemy = new Enemy(this, this.spawnPoint.x + randomSpawnX, this.spawnPoint.y + randomSpawnY, this.spriteSheeName, randomSpeed);
         enemy.comportamento = comportamento;
         return enemy;
     }
 
-    criarCamera(pMap) {
-        let cam = this.cameras.main;
-        cam.startFollow(this.player);
-        cam.setBounds(0, 0, pMap.widthInPixels, pMap.heightInPixels);
-        return cam;
+    createCamera(pMap) {
+        this.camera = this.cameras.main;
+        this.camera.startFollow(this.player);
+        this.camera.setBounds(0, 0, pMap.widthInPixels, pMap.heightInPixels);
     }
 
-    criarGameHud() {
-        //hud do game
+    createGameHud() {
         this.gameHud = new GameHud(this);
-
         this.gameHud.showStamina(this.player.lostStamina());
+    }
+
+    createStaminaDecreaseEvent(decreaseTime){
+        this.time.addEvent({
+            delay: decreaseTime,
+            callback: function () {
+                this.gameHud.showStamina(this.player.lostStamina());
+            },
+            callbackScope: this,
+            loop: true
+        });
     }
 
     update() {
@@ -154,19 +151,10 @@ class SceneMain extends Phaser.Scene {
             this.player.stop();
             this.movePlayer();
             this.gameHud.showTime(this.currentTime());
-
-            let enemyLength = this.enemies.getChildren().length;
-            for (let i = 0; i < enemyLength; i++) {
-                let enemy = this.enemies.getChildren()[i];
-                enemy.agir(this.player, enemy);
-            }
+            this.enemyActions();
         } else {
             this.scene.start("SceneGameOver");
         }
-    }
-
-    currentTime() {
-        return ((new Date().getTime() / 1000) - this.inicioJogo);
     }
 
     movePlayer() {
@@ -187,9 +175,17 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
+    currentTime() {
+        return ((new Date().getTime() / 1000) - this.gameBegin);
+    }
 
-
-    
+    enemyActions() {
+        let enemyLength = this.enemies.getChildren().length;
+        for (let i = 0; i < enemyLength; i++) {
+            let enemy = this.enemies.getChildren()[i];
+            enemy.agir(this.player, enemy);
+        }
+    }
 
     mapData(pMap) {
         console.log(pMap);
