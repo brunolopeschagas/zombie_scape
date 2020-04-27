@@ -132,29 +132,37 @@ class SceneMain extends Phaser.Scene {
 
     createGameHud() {
         this.gameHud = new GameHud(this);
-        this.gameHud.showStamina(this.player.lostStamina());
+        this.showStamina();
     }
 
     createStaminaDecreaseEvent(decreaseTime){
         this.time.addEvent({
             delay: decreaseTime,
             callback: function () {
-                this.gameHud.showStamina(this.player.lostStamina());
+                this.showStamina();
             },
             callbackScope: this,
             loop: true
         });
     }
 
+    showStamina(){
+        this.gameHud.showStamina(this.player.lostStamina());
+    }
+
     update() {
         if (this.player.alive) {
             this.player.stop();
             this.movePlayer();
-            this.gameHud.showTime(this.currentTime());
+            this.showTime();
             this.enemyActions();
         } else {
-            this.scene.start("SceneGameOver");
+            this.gameOver();
         }
+    }
+
+    showTime(){
+        this.gameHud.showTime(this.currentTime());
     }
 
     movePlayer() {
@@ -185,6 +193,18 @@ class SceneMain extends Phaser.Scene {
             let enemy = this.enemies.getChildren()[i];
             enemy.agir(this.player, enemy);
         }
+    }
+
+    gameOver(){
+        this.camera.shake(300);
+        this.time.addEvent({
+            delay: 1000,
+            callback: function () {
+                this.scene.start("SceneGameOver");
+            },
+            callbackScope: this,
+            loop: false
+        });
     }
 
     mapData(pMap) {
