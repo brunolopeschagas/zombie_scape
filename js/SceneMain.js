@@ -6,7 +6,7 @@ class SceneMain extends Phaser.Scene {
         this.cursors;
         this.inputs;
         this.camera;
-        this.quantitiOfZombies = 7;
+        this.quantitiOfZombies;
         this.gameBegin = new Date().getTime() / 1000;
         this.timeElapsed;
         this.gameHud;
@@ -20,7 +20,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     loadMap() {
-        this.load.tilemapTiledJSON("mapa", "assets/tilemaps/zombie_map_1.json");
+        this.load.tilemapTiledJSON("mapa", "assets/tilemaps/zs_isle.json");
         this.load.image("tiles", "assets/tilesets/tuxmon-sample-32px.png");
     }
 
@@ -34,24 +34,31 @@ class SceneMain extends Phaser.Scene {
 
         // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
         // Phaser's cache (i.e. the name you used in preload)
-        const TILESET = MAP.addTilesetImage("tiled_map", "tiles");
+        // const TILESET = MAP.addTilesetImage("zs_isle_tiled_map", "tiles");
+        const TILESET = MAP.addTilesetImage("tuxmon-sample-32px", "tiles");
 
+        this.quantitiOfZombies = MAP.findObject("map_data", mapData => mapData.name === "max_enemies").type;
+        
         // Parameters: layer name (or index) from Tiled, tileset, x, y
-        const GROUND_LAYER = MAP.createStaticLayer("chao", TILESET);
-        const PLAYER_LAYER = MAP.createStaticLayer("mundo", TILESET);
-        const ABOVE_LAYER = MAP.createStaticLayer("acima", TILESET);
+        const GROUND_LAYER = MAP.createStaticLayer("ground", TILESET);
+        const COLISION_LAYER = MAP.createStaticLayer("middle", TILESET);
+        const ABOVE_LAYER = MAP.createStaticLayer("above", TILESET);
         const DEPTH_ABOVE_LAYER = 10;
-
-        //set the colision tiles to actually collides
-        PLAYER_LAYER.setCollisionByProperty({ collides: true });
 
         //seto a profundidade da camada (no caso acima do player
         ABOVE_LAYER.setDepth(DEPTH_ABOVE_LAYER);
+        
+        //set the colision tiles to actually collides by property
+        // PLAYER_LAYER.setCollisionByProperty({ collides: true });
 
-        this.createPlayer(MAP.findObject("Objects", obj => obj.name === "spawn_player"))
-        this.createEnemies();
+        //colisions tiles by excluision
+        COLISION_LAYER.setCollisionByExclusion([-1]);
+
+
+        this.createPlayer(MAP.findObject("spawn", spawn => spawn.name === "player_spawn"))
+        this.createEnemies(MAP);
         this.createColisionPlayerEnemy()
-        this.createColisionsEntitiesLayer(PLAYER_LAYER);
+        this.createColisionsEntitiesLayer(COLISION_LAYER);
 
         //teclado
         this.inputs = new InputKeyBoard(this.input.keyboard.createCursorKeys());
@@ -89,16 +96,18 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
-    createEnemies() {
+    createEnemies(map) {
         this.enemies = this.add.group();
         const COMP_LERDO = new CompLerdo();
         const COMP_PERSEGUIR = new CompPerseguir(200);
         let enemy = null;
         for (let i = 0; i < this.quantitiOfZombies; i++) {
+            let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
+            console.log(map.findObject("spawn",spawn => spawn.objects));
             if (i % 2 === 0) {
-                enemy = this.createEnemiesBehavior(COMP_PERSEGUIR);
+                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
             } else {
-                enemy = this.createEnemiesBehavior(COMP_LERDO);
+                enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy);
             }
             this.enemies.add(enemy);
         }
@@ -115,11 +124,9 @@ class SceneMain extends Phaser.Scene {
         this.physics.add.collider(this.enemies, layer);
     }
 
-    createEnemiesBehavior(comportamento) {
-        let randomSpawnX = Phaser.Math.Between(-500, 500);
-        let randomSpawnY = Phaser.Math.Between(-500, 500);
+    createEnemiesWhitBehavior(comportamento, spawnPointEnemy) {
         let randomSpeed = Phaser.Math.Between(comportamento.minSpeed, comportamento.maxSpeed);
-        let enemy = new Enemy(this, this.spawnPoint.x + randomSpawnX, this.spawnPoint.y + randomSpawnY, this.spriteSheeName, randomSpeed);
+        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, this.spriteSheeName, randomSpeed);
         enemy.comportamento = comportamento;
         return enemy;
     }
