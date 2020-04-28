@@ -12,16 +12,17 @@ class SceneMain extends Phaser.Scene {
         this.gameHud;
         this.spawnPoint;
         this.spriteSheeName = 'dude';
+        this.jsonMap;
     }
 
     preload() {
         this.loadMap();
         this.loadSpriteSheets();
     }
-
+    
     loadMap() {
-        this.load.tilemapTiledJSON("mapa", "assets/tilemaps/zs_isle.json");
-        this.load.image("tiles", "assets/tilesets/tuxmon-sample-32px.png");
+        this.jsonMap = new JsonMap(this,"mapa","assets/tilemaps/zs_isle.json", "assets/tilesets/tuxmon-sample-32px.png");
+        this.jsonMap.loadMap();
     }
 
     loadSpriteSheets() {
@@ -30,12 +31,12 @@ class SceneMain extends Phaser.Scene {
 
     create() {
         const STAMINA_DECREASE_TIME = 10000;
-        const MAP = this.make.tilemap({ key: "mapa" });
+        const MAP = this.make.tilemap({ key: this.jsonMap.key });
 
         // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
         // Phaser's cache (i.e. the name you used in preload)
         // const TILESET = MAP.addTilesetImage("zs_isle_tiled_map", "tiles");
-        const TILESET = MAP.addTilesetImage("tuxmon-sample-32px", "tiles");
+        const TILESET = MAP.addTilesetImage("tuxmon-sample-32px", this.jsonMap.key);
 
         this.quantitiOfZombies = MAP.findObject("map_data", mapData => mapData.name === "max_enemies").type;
         
