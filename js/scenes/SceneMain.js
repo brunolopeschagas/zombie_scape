@@ -19,9 +19,9 @@ class SceneMain extends Phaser.Scene {
         this.loadMap();
         this.loadSpriteSheets();
     }
-    
+
     loadMap() {
-        this.jsonMap = new JsonMap(this,"mapa","assets/tilemaps/zs_isle.json", "assets/tilesets/tuxmon-sample-32px.png");
+        this.jsonMap = new JsonMap(this, "zs_map_1", "assets/tilemaps/zs_isle.json", "assets/tilesets/tuxmon-sample-32px.png");
         this.jsonMap.loadMap();
     }
 
@@ -31,44 +31,37 @@ class SceneMain extends Phaser.Scene {
 
     create() {
         const STAMINA_DECREASE_TIME = 10000;
-        const MAP = this.make.tilemap({ key: this.jsonMap.key });
 
-        // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
-        // Phaser's cache (i.e. the name you used in preload)
-        // const TILESET = MAP.addTilesetImage("zs_isle_tiled_map", "tiles");
-        const TILESET = MAP.addTilesetImage("tuxmon-sample-32px", this.jsonMap.key);
+        this.jsonMap.makeTileMap();
+        this.jsonMap.addTileSetImageToMap("tuxmon-sample-32px", this.jsonMap.key);
 
-        this.quantitiOfZombies = MAP.findObject("map_data", mapData => mapData.name === "max_enemies").type;
-        
+        this.quantitiOfZombies = this.jsonMap.map.findObject("map_data", mapData => mapData.name === "max_enemies").type;
+
         // Parameters: layer name (or index) from Tiled, tileset, x, y
-        const GROUND_LAYER = MAP.createStaticLayer("ground", TILESET);
-        const COLISION_LAYER = MAP.createStaticLayer("middle", TILESET);
-        const ABOVE_LAYER = MAP.createStaticLayer("above", TILESET);
-        const DEPTH_ABOVE_LAYER = 10;
+        this.jsonMap.createAndAddLayer("ground", 0);
+        this.jsonMap.createAndAddLayer("middle", 0);
+        this.jsonMap.createAndAddLayer("above", 0);
+        
+        //colisions tiles by excluision
+        this.jsonMap.activateColisionToLayer(1);
 
         //seto a profundidade da camada (no caso acima do player
-        ABOVE_LAYER.setDepth(DEPTH_ABOVE_LAYER);
-        
-        //set the colision tiles to actually collides by property
-        // PLAYER_LAYER.setCollisionByProperty({ collides: true });
+        const DEPTH_ABOVE_LAYER = 10;
+        this.jsonMap.getLayer(2).setDepth(DEPTH_ABOVE_LAYER);
 
-        //colisions tiles by excluision
-        COLISION_LAYER.setCollisionByExclusion([-1]);
-
-
-        this.createPlayer(MAP.findObject("spawn", spawn => spawn.name === "player_spawn"))
-        this.createEnemies(MAP);
+        this.createPlayer(this.jsonMap.map.findObject("spawn", spawn => spawn.name === "player_spawn"))
+        this.createEnemies(this.jsonMap.map);
         this.createColisionPlayerEnemy()
-        this.createColisionsEntitiesLayer(COLISION_LAYER);
+        this.createColisionsEntitiesLayer(this.jsonMap.getLayer(1));
 
         //teclado
         this.inputs = new InputKeyBoard(this.input.keyboard.createCursorKeys());
-        
-        this.createCamera(MAP);
+
+        this.createCamera(this.jsonMap.map);
         this.createGameHud();
         this.createStaminaDecreaseEvent(STAMINA_DECREASE_TIME);
 
-        this.mapData(MAP);
+        this.mapData(this.jsonMap.map);
     }
 
     createPlayer(startPoint) {
@@ -104,7 +97,7 @@ class SceneMain extends Phaser.Scene {
         let enemy = null;
         for (let i = 0; i < this.quantitiOfZombies; i++) {
             let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
-            console.log(map.findObject("spawn",spawn => spawn.objects));
+            console.log(map.findObject("spawn", spawn => spawn.objects));
             if (i % 2 === 0) {
                 enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
             } else {
@@ -120,7 +113,7 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
-    createColisionsEntitiesLayer(layer){
+    createColisionsEntitiesLayer(layer) {
         this.physics.add.collider(this.player, layer);
         this.physics.add.collider(this.enemies, layer);
     }
@@ -143,7 +136,7 @@ class SceneMain extends Phaser.Scene {
         this.showStamina();
     }
 
-    createStaminaDecreaseEvent(decreaseTime){
+    createStaminaDecreaseEvent(decreaseTime) {
         this.time.addEvent({
             delay: decreaseTime,
             callback: function () {
@@ -154,7 +147,7 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
-    showStamina(){
+    showStamina() {
         this.gameHud.showStamina(this.player.lostStamina());
     }
 
@@ -169,7 +162,7 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
-    showTime(){
+    showTime() {
         this.gameHud.showTime(this.currentTime());
     }
 
@@ -203,7 +196,7 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
-    gameOver(){
+    gameOver() {
         this.camera.shake(300);
         this.time.addEvent({
             delay: 1000,

@@ -1,20 +1,36 @@
 class Map {
 
-    constructor(scene, key, urlMap, urlImageTileSet) {
+    constructor(scene, key, urlMap) {
         this._scene = scene;
         this._key = key;
         this._urlMap = urlMap;
-        this._urlImageTileSet = urlImageTileSet;
         this._layers = new Array();
+        this._map;
     }
 
     loadMap(){}
 
-    loadImageTileSet(){
-        this._scene.load.image(this._key, this._urlImageTileSet);
+    createStaticLayer(){}
+
+    addLayer(layer){
+        this._layers.push(layer);
+    }
+
+    removeTopLayer(layer){
+        this._layers.pop();
+    }
+
+    getLayer(indexLayer){
+        return this._layers[indexLayer];
     }
 
     get key(){
         return this._key;
     }
+
+    get map(){
+        return this._map;
+    }
+
+
 }
