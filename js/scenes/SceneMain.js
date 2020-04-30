@@ -30,6 +30,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
+
         const STAMINA_DECREASE_TIME = 10000;
 
         this.jsonMap.makeTileMap();
@@ -62,6 +63,7 @@ class SceneMain extends Phaser.Scene {
         this.createStaminaDecreaseEvent(STAMINA_DECREASE_TIME);
 
         this.mapData(this.jsonMap.map);
+
     }
 
     createPlayer(startPoint) {
@@ -98,7 +100,7 @@ class SceneMain extends Phaser.Scene {
         for (let i = 0; i < this.quantitiOfZombies; i++) {
             let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
             console.log(map.findObject("spawn", spawn => spawn.objects));
-            if (i % 2 === 0) {
+            if (i % 2 !== 0) {
                 enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
             } else {
                 enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy);
@@ -184,6 +186,19 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
+    gameOver() {
+        this.player.die();
+        this.camera.shake(300);
+        this.time.addEvent({
+            delay: 1000,
+            callback: function () {
+                this.scene.start("SceneGameOver", { level: 1, survivedTime: this.currentTime()});
+            },
+            callbackScope: this,
+            loop: false
+        });
+    }
+
     currentTime() {
         return ((new Date().getTime() / 1000) - this.gameBegin);
     }
@@ -194,18 +209,6 @@ class SceneMain extends Phaser.Scene {
             let enemy = this.enemies.getChildren()[i];
             enemy.agir(this.player, enemy);
         }
-    }
-
-    gameOver() {
-        this.camera.shake(300);
-        this.time.addEvent({
-            delay: 1000,
-            callback: function () {
-                this.scene.start("SceneGameOver");
-            },
-            callbackScope: this,
-            loop: false
-        });
     }
 
     mapData(pMap) {
