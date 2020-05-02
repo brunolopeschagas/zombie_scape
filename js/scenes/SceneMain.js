@@ -11,7 +11,7 @@ class SceneMain extends Phaser.Scene {
         this.timeElapsed;
         this.gameHud;
         this.spawnPoint;
-        this.spriteSheeName = 'dude';
+        this.spriteSheeName = 'player';
         this.jsonMap;
     }
 
@@ -26,7 +26,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     loadSpriteSheets() {
-        this.load.spritesheet(this.spriteSheeName, 'assets/sprites/dude.png', { frameWidth: 32, frameHeight: 28 });
+        this.load.spritesheet(this.spriteSheeName, 'assets/sprites/player_spritesheet.png', { frameWidth: 40, frameHeight: 40 });
     }
 
     create() {
@@ -69,24 +69,36 @@ class SceneMain extends Phaser.Scene {
     createPlayer(startPoint) {
         this.spawnPoint = startPoint;
         this.player = new Player(this, this.spawnPoint.x, this.spawnPoint.y, 70, this.spriteSheeName);
-        this.criarAnimacoes();
+        this.createPlayerAnimations();
     }
 
-    criarAnimacoes() {
+    createPlayerAnimations() {
         this.game.anims.create({
             key: 'left',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 0, end: 3 }),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 27, end: 35 }),
             frameRate: 10,
             repeat: -1
         });
         this.game.anims.create({
             key: 'turn',
-            frames: [{ key: this.player.Key, frame: 4 }],
+            frames: [ { key: this.player.key, frame: 9 } ],
             frameRate: 20
         });
         this.game.anims.create({
             key: 'right',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 5, end: 8 }),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 18, end: 26 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'down',
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 9, end: 17 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'up',
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 0, end: 8 }),
             frameRate: 10,
             repeat: -1
         });
@@ -177,10 +189,10 @@ class SceneMain extends Phaser.Scene {
             this.player.anims.play('right', true);
         } else if (this.inputs.moveUp()) {
             this.player.moveUp();
-            this.player.anims.play('turn', true);
+            this.player.anims.play('up', true);
         } else if (this.inputs.moveDown()) {
             this.player.moveDown();
-            this.player.anims.play('turn', true);
+            this.player.anims.play('down', true);
         } else {
             this.player.anims.play('turn');
         }
