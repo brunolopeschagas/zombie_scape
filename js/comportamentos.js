@@ -16,15 +16,15 @@ class Behavior {
     }
 
     chaseAnimation(pPresa, pCacador) {
-        if (pCacador.x < pPresa.x) {
-            pCacador.anims.play('right', true);
+        if (pCacador.y > pPresa.y) {
+            pCacador.anims.play('zombie_1_up', true);
         } else {
-            pCacador.anims.play('left', true);
+            pCacador.anims.play('zombie_1_down', true);
         }
     }
     
     stopAnimation(pCacador){
-        pCacador.anims.play('turn', true);
+        pCacador.anims.play('zombie_1_turn', true);
     }
 
     get maxSpeed() {

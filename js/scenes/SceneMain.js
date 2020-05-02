@@ -11,7 +11,8 @@ class SceneMain extends Phaser.Scene {
         this.timeElapsed;
         this.gameHud;
         this.spawnPoint;
-        this.spriteSheeName = 'player';
+        this.spriteSheetPlayer = 'player';
+        this.spriteSheetZombies1 = 'zombie';
         this.jsonMap;
     }
 
@@ -26,7 +27,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     loadSpriteSheets() {
-        this.load.spritesheet(this.spriteSheeName, 'assets/sprites/player_spritesheet.png', { frameWidth: 40, frameHeight: 40 });
+        this.load.spritesheet(this.spriteSheetPlayer, 'assets/sprites/player_spritesheet.png', { frameWidth: 30, frameHeight: 50 });
+        this.load.spritesheet(this.spriteSheetZombies1, 'assets/sprites/zombie_1_spritesheet.png', { frameWidth: 30, frameHeight: 50 });
     }
 
     create() {
@@ -42,7 +44,7 @@ class SceneMain extends Phaser.Scene {
         this.jsonMap.createAndAddLayer("ground", 0);
         this.jsonMap.createAndAddLayer("middle", 0);
         this.jsonMap.createAndAddLayer("above", 0);
-        
+
         //colisions tiles by excluision
         this.jsonMap.activateColisionToLayer(1);
 
@@ -68,31 +70,32 @@ class SceneMain extends Phaser.Scene {
 
     createPlayer(startPoint) {
         this.spawnPoint = startPoint;
-        this.player = new Player(this, this.spawnPoint.x, this.spawnPoint.y, 70, this.spriteSheeName);
+        this.player = new Player(this, this.spawnPoint.x, this.spawnPoint.y, 70, this.spriteSheetPlayer);
         this.createPlayerAnimations();
     }
 
     createPlayerAnimations() {
         this.game.anims.create({
             key: 'left',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 27, end: 35 }),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 9, end: 17 }),
             frameRate: 10,
             repeat: -1
         });
         this.game.anims.create({
             key: 'turn',
-            frames: [ { key: this.player.key, frame: 9 } ],
-            frameRate: 20
-        });
-        this.game.anims.create({
-            key: 'right',
             frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 18, end: 26 }),
             frameRate: 10,
             repeat: -1
         });
         this.game.anims.create({
+            key: 'right',
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 27, end: 35 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
             key: 'down',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 9, end: 17 }),
+            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 18, end: 26 }),
             frameRate: 10,
             repeat: -1
         });
@@ -119,6 +122,40 @@ class SceneMain extends Phaser.Scene {
             }
             this.enemies.add(enemy);
         }
+        this.createEnemiesAnimations(enemy.key)
+    }
+
+    createEnemiesAnimations(enemeyKey) {
+        this.game.anims.create({
+            key: 'zombie_1_left',
+            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 9, end: 17 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'zombie_1_turn',
+            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 18, end: 26 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'zombie_1_right',
+            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 27, end: 35 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'zombie_1_down',
+            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 18, end: 26 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.game.anims.create({
+            key: 'zombie_1_up',
+            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 0, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
     }
 
     createColisionPlayerEnemy() {
@@ -134,7 +171,7 @@ class SceneMain extends Phaser.Scene {
 
     createEnemiesWhitBehavior(comportamento, spawnPointEnemy) {
         let randomSpeed = Phaser.Math.Between(comportamento.minSpeed, comportamento.maxSpeed);
-        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, this.spriteSheeName, randomSpeed);
+        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, this.spriteSheetZombies1, randomSpeed);
         enemy.comportamento = comportamento;
         return enemy;
     }
@@ -204,7 +241,7 @@ class SceneMain extends Phaser.Scene {
         this.time.addEvent({
             delay: 1000,
             callback: function () {
-                this.scene.start("SceneGameOver", { level: 1, survivedTime: this.currentTime()});
+                this.scene.start("SceneGameOver", { level: 1, survivedTime: this.currentTime() });
             },
             callbackScope: this,
             loop: false
