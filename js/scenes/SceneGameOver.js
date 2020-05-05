@@ -1,4 +1,4 @@
-class SceneGameOver extends Phaser.Scene {
+export default class SceneGameOver extends Phaser.Scene {
     constructor() {
         super({ key: "SceneGameOver" });
         this.title;

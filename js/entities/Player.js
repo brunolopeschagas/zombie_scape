@@ -1,4 +1,5 @@
-class Player extends Entity {
+import Entity from './Entity.js';
+export default class Player extends Entity {
 
     constructor(scene, x, y, speed, key) {
         super(scene, x, y, speed, key);

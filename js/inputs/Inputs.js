@@ -1,4 +1,4 @@
-class Inputs {
+export default class Inputs {
 
     constructor() {
     }

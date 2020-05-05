@@ -1,4 +1,12 @@
-class SceneMain extends Phaser.Scene {
+import JsonMap from '../maps/JsonMap.js';
+import Player from '../entities/Player.js';
+import CompLerdo from '../AI/CompLerdo.js';
+import CompPerseguir from '../AI/CompPerseguir.js';
+import Enemy from '../entities/Enemy.js';
+import InputKeyBoard from '../inputs/InputKeyBoard.js';
+import GameHud from '../GUI/GameHud.js';
+
+export default class SceneMain extends Phaser.Scene {
 
     constructor() {
         super({ key: "SceneMain" });
@@ -114,7 +122,6 @@ class SceneMain extends Phaser.Scene {
         let enemy = null;
         for (let i = 0; i < this.quantitiOfZombies; i++) {
             let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
-            console.log(map.findObject("spawn", spawn => spawn.objects));
             if (i % 2 !== 0) {
                 enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
             } else {

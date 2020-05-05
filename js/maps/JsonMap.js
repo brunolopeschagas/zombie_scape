@@ -1,4 +1,5 @@
-class JsonMap extends Map {
+import Map from './Map.js';
+export default class JsonMap extends Map {
 
     constructor(scene, key, urlMap, urlImageTileSet){
         super(scene, key, urlMap);

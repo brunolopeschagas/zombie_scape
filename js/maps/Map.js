@@ -1,4 +1,4 @@
-class Map {
+export default class Map {
 
     constructor(scene, key, urlMap) {
         this._scene = scene;

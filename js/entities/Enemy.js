@@ -1,4 +1,5 @@
-class Enemy extends Entity {
+import Entity from './Entity.js';
+export default class Enemy extends Entity {
 
     constructor(scene, x, y, key, pSpeed) {
         super(scene, x, y, pSpeed, key);

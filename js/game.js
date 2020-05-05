@@ -1,4 +1,8 @@
 
+import SceneMain from './scenes/SceneMain.js';
+import SceneMainMenu from './scenes/SceneMainMenu.js';
+import SceneGameOver from './scenes/SceneGameOver.js';
+
 const WORLD_WIDTH = 720;
 const WORLD_HEIGHT = 480;
 //const WORLD_WIDTH = window.innerWidth * window.devicePixelRatio;

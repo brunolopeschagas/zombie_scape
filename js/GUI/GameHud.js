@@ -1,4 +1,4 @@
-class GameHud {
+export default class GameHud {
 
     constructor(pScene) {
         this._scene = pScene;

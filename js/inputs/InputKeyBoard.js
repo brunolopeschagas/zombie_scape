@@ -1,4 +1,5 @@
-class InputKeyBoard extends Inputs {
+import Inputs from './Inputs.js';
+export default class InputKeyBoard extends Inputs {
 
     constructor(keyboardCursorKeys) {
         super();
