@@ -2,6 +2,7 @@ import JsonMap from '../maps/JsonMap.js';
 import Player from '../entities/Player.js';
 import CompLerdo from '../AI/CompLerdo.js';
 import CompPerseguir from '../AI/CompPerseguir.js';
+import CompPerseguirPlus from '../AI/CompPerseguirPlus.js';
 import Enemy from '../entities/Enemy.js';
 import InputKeyBoard from '../inputs/InputKeyBoard.js';
 import GameHud from '../GUI/GameHud.js';
@@ -22,6 +23,7 @@ export default class SceneMain extends Phaser.Scene {
         this.spriteSheetPlayer = 'player';
         this.spriteSheetZombies1 = 'zombie';
         this.jsonMap;
+        this.enemies;
     }
 
     preload() {
@@ -72,7 +74,7 @@ export default class SceneMain extends Phaser.Scene {
         this.createGameHud();
         this.createStaminaDecreaseEvent(STAMINA_DECREASE_TIME);
 
-        this.mapData(this.jsonMap.map);
+        // this.mapData(this.jsonMap.map);
 
     }
 
@@ -119,13 +121,15 @@ export default class SceneMain extends Phaser.Scene {
         this.enemies = this.add.group();
         const COMP_LERDO = new CompLerdo();
         const COMP_PERSEGUIR = new CompPerseguir(200);
-        let enemy = null;
-        for (let i = 0; i < this.quantitiOfZombies; i++) {
+        const COMP_PERSEGUIR_PLUS = new CompPerseguirPlus(200);
+        let enemy;
+        this.enemies.add(this.createEnemiesWhitBehavior(COMP_PERSEGUIR_PLUS, map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + 1)));
+        for (let i = 1; i < this.quantitiOfZombies; i++) {
             let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
-            if (i % 2 !== 0) {
-                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
-            } else {
+            if (i % 2 === 0) {
                 enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy);
+            }else {
+                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
             }
             this.enemies.add(enemy);
         }
@@ -171,15 +175,15 @@ export default class SceneMain extends Phaser.Scene {
         });
     }
 
-    createColisionsEntitiesLayer(layer) {
-        this.physics.add.collider(this.player, layer);
-        this.physics.add.collider(this.enemies, layer);
+    createColisionsEntitiesLayer(layerToColide) {
+        this.physics.add.collider(this.player, layerToColide);
+        this.physics.add.collider(this.enemies, layerToColide);
     }
 
-    createEnemiesWhitBehavior(comportamento, spawnPointEnemy) {
-        let randomSpeed = Phaser.Math.Between(comportamento.minSpeed, comportamento.maxSpeed);
+    createEnemiesWhitBehavior(behavior, spawnPointEnemy) {
+        let randomSpeed = Phaser.Math.Between(behavior.minSpeed, behavior.maxSpeed);
         let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, this.spriteSheetZombies1, randomSpeed);
-        enemy.comportamento = comportamento;
+        enemy.behavior = behavior;
         return enemy;
     }
 
@@ -261,9 +265,10 @@ export default class SceneMain extends Phaser.Scene {
 
     enemyActions() {
         let enemyLength = this.enemies.getChildren().length;
+        let enemy;
         for (let i = 0; i < enemyLength; i++) {
-            let enemy = this.enemies.getChildren()[i];
-            enemy.agir(this.player, enemy);
+            enemy = this.enemies.getChildren()[i];
+            enemy.act(this.player, enemy);
         }
     }
 

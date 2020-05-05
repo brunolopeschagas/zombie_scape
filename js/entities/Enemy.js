@@ -7,19 +7,19 @@ export default class Enemy extends Entity {
         this.key = key;
         this._speed = pSpeed;
         this.vivo = true;
-        this._comportamento = null;
+        this._behavior = null;
     }
 
-    set comportamento(comportamento) {
-        this._comportamento = comportamento;
+    set behavior(comportamento) {
+        this._behavior = comportamento;
     }
 
-    get comportamento() {
-        return this._comportamento;
+    get behavior() {
+        return this._behavior;
     }
 
-    agir(pEntityPresa, pEntityCacador) {
-        this._comportamento.agir(pEntityPresa, pEntityCacador);
+    act(pPrey, pHunter) {
+        this._behavior.act(pPrey, pHunter);
     }
 
     get Key() {

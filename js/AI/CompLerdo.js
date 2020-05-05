@@ -5,8 +5,8 @@ export default class CompLerdo extends Behavior {
         super(5, 15);
     }
 
-    agir(pEntityPresa, pEntityCacador) {
-        this.chaseCore(pEntityPresa, pEntityCacador);
-        this.chaseAnimation(pEntityPresa, pEntityCacador);
+    act(pPrey, pHunter) {
+        this.chaseCore(pPrey, pHunter);
+        this.chaseAnimation(pPrey, pHunter);
     }
 }
