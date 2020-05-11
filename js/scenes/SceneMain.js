@@ -22,6 +22,7 @@ export default class SceneMain extends Phaser.Scene {
         this.spawnPoint;
         this.spriteSheetPlayer = 'player';
         this.spriteSheetZombies1 = 'zombie';
+        this.spriteSheetZombies2 = 'zombie2';
         this.jsonMap;
         this.enemies;
     }
@@ -39,6 +40,7 @@ export default class SceneMain extends Phaser.Scene {
     loadSpriteSheets() {
         this.load.spritesheet(this.spriteSheetPlayer, 'assets/sprites/player_spritesheet.png', { frameWidth: 30, frameHeight: 50 });
         this.load.spritesheet(this.spriteSheetZombies1, 'assets/sprites/zombie_1_spritesheet.png', { frameWidth: 30, frameHeight: 50 });
+        this.load.spritesheet(this.spriteSheetZombies2, 'assets/sprites/zombie_2_spritesheet.png', { frameWidth: 30, frameHeight: 50 });
     }
 
     create() {
@@ -123,13 +125,13 @@ export default class SceneMain extends Phaser.Scene {
         const COMP_PERSEGUIR = new CompPerseguir(200);
         const COMP_PERSEGUIR_PLUS = new CompPerseguirPlus(200);
         let enemy;
-        this.enemies.add(this.createEnemiesWhitBehavior(COMP_PERSEGUIR_PLUS, map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + 1)));
-        for (let i = 1; i < this.quantitiOfZombies; i++) {
-            let spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
+        let spawnPointEnemy;
+        for (let i = 0; i < this.quantitiOfZombies; i++) {
+            spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
             if (i % 2 === 0) {
-                enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy);
+                enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy, this.spriteSheetZombies1);
             }else {
-                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy);
+                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR_PLUS, spawnPointEnemy, this.spriteSheetZombies2);
             }
             this.enemies.add(enemy);
         }
@@ -180,9 +182,9 @@ export default class SceneMain extends Phaser.Scene {
         this.physics.add.collider(this.enemies, layerToColide);
     }
 
-    createEnemiesWhitBehavior(behavior, spawnPointEnemy) {
+    createEnemiesWhitBehavior(behavior, spawnPointEnemy, spriteSheet) {
         let randomSpeed = Phaser.Math.Between(behavior.minSpeed, behavior.maxSpeed);
-        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, this.spriteSheetZombies1, randomSpeed);
+        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, spriteSheet, randomSpeed);
         enemy.behavior = behavior;
         return enemy;
     }
