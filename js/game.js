@@ -23,7 +23,7 @@ var config = {
         }
     },
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.CANVAS,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     scene: [
