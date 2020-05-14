@@ -1,8 +1,9 @@
 import Behavior from './Behavior.js';
-export default class CompLerdo extends Behavior {
+export default class SlowChaseBehavior extends Behavior {
 
     constructor() {
         super(5, 15);
+        this._actionInterval = 5000;
     }
 
     act(pPrey, pHunter) {

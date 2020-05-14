@@ -18,8 +18,8 @@ export default class Enemy extends Entity {
         return this._behavior;
     }
 
-    act(pPrey, pHunter) {
-        this._behavior.act(pPrey, pHunter);
+    act(pPrey) {
+        this._behavior.act(pPrey, this);
     }
 
     get Key() {

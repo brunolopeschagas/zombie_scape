@@ -1,5 +1,5 @@
 export default class RandomGen{
-    static getRandomIntBetween(minInt, maxInt){
-        return Math.floor(Math.random() * maxInt) + minInt;
+    static getRandomFloatBetween(min, max){
+        return Math.random() * (max - min) + min;
     }
 }

@@ -1,12 +1,11 @@
 import JsonMap from '../maps/JsonMap.js';
 import Player from '../entities/Player.js';
-import CompLerdo from '../AI/CompLerdo.js';
-import CompPerseguir from '../AI/CompPerseguir.js';
-import CompPerseguirPlus from '../AI/CompPerseguirPlus.js';
+import SlowChaseBehavior from '../AI/SlowChaseBehavior.js';
+import ChaseBehavior from '../AI/ChaseBehavior.js';
 import Enemy from '../entities/Enemy.js';
 import InputKeyBoard from '../inputs/InputKeyBoard.js';
 import GameHud from '../GUI/GameHud.js';
-import TimeBehavior from '../AI/TimeBehavior.js';
+import RandomGen from '../utils/RandomGen.js';
 
 export default class SceneMain extends Phaser.Scene {
 
@@ -17,7 +16,7 @@ export default class SceneMain extends Phaser.Scene {
         this.inputs;
         this.camera;
         this.quantitiOfZombies;
-        this.gameTimeStart;
+        this.gameTimeStartCount = 0;
         this.gameHud;
         this.spawnPoint;
         this.spriteSheetPlayer = 'player';
@@ -44,7 +43,7 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     create() {
-        this.gameTimeStart = this.gameTimeStart();
+        this.gameTimeStartCount = this.gameTimeStart();
 
         const STAMINA_DECREASE_TIME = 10000;
 
@@ -66,7 +65,7 @@ export default class SceneMain extends Phaser.Scene {
         this.jsonMap.getLayer(2).setDepth(DEPTH_ABOVE_LAYER);
 
         this.createPlayer(this.jsonMap.map.findObject("spawn", spawn => spawn.name === "player_spawn"))
-        this.createEnemies(this.player, this.jsonMap.map);
+        this.gerenateZombies(this.player, this.jsonMap.map);
         this.createColisionPlayerEnemy()
         this.createColisionsEntitiesLayer(this.jsonMap.getLayer(1));
 
@@ -81,7 +80,7 @@ export default class SceneMain extends Phaser.Scene {
 
     }
 
-    gameTimeStart(){
+    gameTimeStart() {
         return new Date().getTime() / 1000;
     }
 
@@ -124,28 +123,39 @@ export default class SceneMain extends Phaser.Scene {
         });
     }
 
-    createEnemies(player, map) {
+    gerenateZombies(player, map) {
         this.enemies = this.add.group();
-        const COMP_LERDO = new CompLerdo();
-        const COMP_PERSEGUIR = new CompPerseguir(200);
-        
-        
+        let SLOW_CHASE_BEHAVIOR = new SlowChaseBehavior();
+        let CHASE_BEHAVIOR = new ChaseBehavior(200);
         let enemy;
         let spawnPointEnemy;
         for (let i = 0; i < this.quantitiOfZombies; i++) {
             spawnPointEnemy = map.findObject("spawn", spawn => spawn.name === "enemy_spawn_" + (i + 1));
             if (i % 2 === 0) {
-                enemy = this.createEnemiesWhitBehavior(COMP_LERDO, spawnPointEnemy, this.spriteSheetZombies1);
-            }else {
-                enemy = this.createEnemiesWhitBehavior(COMP_PERSEGUIR, spawnPointEnemy, this.spriteSheetZombies2);
+                enemy = this.createEnemy(SLOW_CHASE_BEHAVIOR, spawnPointEnemy);
+            } else {
+                enemy = this.createEnemy(CHASE_BEHAVIOR, spawnPointEnemy);
             }
             this.enemies.add(enemy);
-            this.createEnemyChaseBehaviorCicle(10000, enemy, this.player);
         }
         this.createEnemiesAnimations(enemy.key);
     }
+    
+    createEnemy(behavior, spawnPointEnemy) {
+        let enemy = this.createEnemyWhitBehavior(behavior, spawnPointEnemy, this.spriteSheetZombies1);
+        let customBehaviorCicleTime = this.generateBehaviorCicleTime(behavior.actionInterval);
+        this.createEnemyChaseBehaviorCicle(customBehaviorCicleTime, enemy, this.player);
+        return enemy;
+    }
 
-    createEnemyChaseBehaviorCicle(delayOfActionInMilis, enemy, enemiesPrey){
+    createEnemyWhitBehavior(behavior, spawnPointEnemy, spriteSheet) {
+        let randomSpeed = Phaser.Math.Between(behavior.minSpeed, behavior.maxSpeed);
+        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, spriteSheet, randomSpeed);
+        enemy.behavior = behavior;
+        return enemy;
+    }
+
+    createEnemyChaseBehaviorCicle(delayOfActionInMilis, enemy, enemiesPrey) {
         this.time.addEvent({
             delay: delayOfActionInMilis,
             callback: function () {
@@ -154,6 +164,10 @@ export default class SceneMain extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+    }
+
+    generateBehaviorCicleTime(baseTimeInMilis) {
+        return RandomGen.getRandomFloatBetween(0, 2000) + baseTimeInMilis;
     }
 
     createEnemiesAnimations(enemeyKey) {
@@ -198,13 +212,6 @@ export default class SceneMain extends Phaser.Scene {
     createColisionsEntitiesLayer(layerToColide) {
         this.physics.add.collider(this.player, layerToColide);
         this.physics.add.collider(this.enemies, layerToColide);
-    }
-
-    createEnemiesWhitBehavior(behavior, spawnPointEnemy, spriteSheet) {
-        let randomSpeed = Phaser.Math.Between(behavior.minSpeed, behavior.maxSpeed);
-        let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, spriteSheet, randomSpeed);
-        enemy.behavior = behavior;
-        return enemy;
     }
 
     createCamera(pMap) {
@@ -279,7 +286,7 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     currentTime() {
-        return ((new Date().getTime() / 1000) - this.gameTimeStart);
+        return ((new Date().getTime() / 1000) - this.gameTimeStartCount);
     }
 
     mapData(pMap) {

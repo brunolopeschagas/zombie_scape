@@ -4,7 +4,10 @@ export default class Behavior {
         this._maxSpeed = pMaxSpeed;
         this._minSpeed = pMinSpeed;
         this._chaseAngle;
+        this._actionInterval;
     }
+
+    act(prey, hunter){}
 
     chaseCore(pPrey, pHunter) {
         this.calcChaseAngle(pHunter, pPrey);
@@ -47,5 +50,9 @@ export default class Behavior {
 
     get minSpeed() {
         return this._minSpeed;
+    }
+
+    get actionInterval(){
+        return this._actionInterval;
     }
 }
