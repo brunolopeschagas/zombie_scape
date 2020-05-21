@@ -6,6 +6,8 @@ import Enemy from '../entities/Enemy.js';
 import InputKeyBoard from '../inputs/InputKeyBoard.js';
 import GameHud from '../GUI/GameHud.js';
 import RandomGen from '../utils/RandomGen.js';
+import Animation from '../animations/Animation.js';
+import {PLAYER_ANIM_KEYS} from '../animations/ZombieAnimationKeys.js';
 
 export default class SceneMain extends Phaser.Scene {
 
@@ -91,36 +93,12 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     createPlayerAnimations() {
-        this.game.anims.create({
-            key: 'left',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 9, end: 17 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'turn',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 18, end: 26 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'right',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 27, end: 35 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'down',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 18, end: 26 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'up',
-            frames: this.game.anims.generateFrameNumbers(this.player.Key, { start: 0, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        let animation = new Animation(this.game.anims);
+        animation.createInfiniteAnimation(this.player.Key, PLAYER_ANIM_KEYS.LEFT, 9, 17);
+        animation.createInfiniteAnimation(this.player.Key, PLAYER_ANIM_KEYS.IDLE, 18, 26);
+        animation.createInfiniteAnimation(this.player.Key, PLAYER_ANIM_KEYS.RIGHT, 27, 35);
+        animation.createInfiniteAnimation(this.player.Key, PLAYER_ANIM_KEYS.DOWN, 18, 26);
+        animation.createInfiniteAnimation(this.player.Key, PLAYER_ANIM_KEYS.UP, 0, 8);
     }
 
     gerenateZombies(player, map) {
@@ -149,7 +127,7 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     createEnemyWhitBehavior(behavior, spawnPointEnemy, spriteSheet) {
-        let randomSpeed = Phaser.Math.Between(behavior.minSpeed, behavior.maxSpeed);
+        let randomSpeed = RandomGen.getRandomFloatBetween(behavior.minSpeed, behavior.maxSpeed);
         let enemy = new Enemy(this, spawnPointEnemy.x, spawnPointEnemy.y, spriteSheet, randomSpeed);
         enemy.behavior = behavior;
         return enemy;
@@ -171,36 +149,10 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     createEnemiesAnimations(enemeyKey) {
-        this.game.anims.create({
-            key: 'zombie_1_left',
-            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 9, end: 17 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'zombie_1_turn',
-            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 18, end: 26 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'zombie_1_right',
-            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 27, end: 35 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'zombie_1_down',
-            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 18, end: 26 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.game.anims.create({
-            key: 'zombie_1_up',
-            frames: this.game.anims.generateFrameNumbers(enemeyKey, { start: 0, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        let animation = new Animation(this.game.anims);
+        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_turn', 18, 26);
+        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_down', 18, 26);
+        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_up', 0, 8);
     }
 
     createColisionPlayerEnemy() {
@@ -242,7 +194,6 @@ export default class SceneMain extends Phaser.Scene {
 
     update() {
         if (this.player.alive) {
-            this.player.stop();
             this.movePlayer();
             this.showTime();
         } else {
@@ -255,20 +206,21 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     movePlayer() {
+        this.player.stop();
         if (this.inputs.moveLeft()) {
             this.player.moveLeft();
-            this.player.anims.play('left', true);
+            this.player.anims.play(PLAYER_ANIM_KEYS.LEFT, true);
         } else if (this.inputs.moveRight()) {
             this.player.moveRight();
-            this.player.anims.play('right', true);
+            this.player.anims.play(PLAYER_ANIM_KEYS.RIGHT, true);
         } else if (this.inputs.moveUp()) {
             this.player.moveUp();
-            this.player.anims.play('up', true);
+            this.player.anims.play(PLAYER_ANIM_KEYS.UP, true);
         } else if (this.inputs.moveDown()) {
             this.player.moveDown();
-            this.player.anims.play('down', true);
+            this.player.anims.play(PLAYER_ANIM_KEYS.DOWN, true);
         } else {
-            this.player.anims.play('turn');
+            this.player.anims.play(PLAYER_ANIM_KEYS.IDLE);
         }
     }
 
