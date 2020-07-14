@@ -12,4 +12,5 @@ export default class Animation {
             repeat: -1
         });
     }
+
 }

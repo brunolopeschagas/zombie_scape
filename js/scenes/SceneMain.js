@@ -7,7 +7,8 @@ import InputKeyBoard from '../inputs/InputKeyBoard.js';
 import GameHud from '../GUI/GameHud.js';
 import RandomGen from '../utils/RandomGen.js';
 import Animation from '../animations/Animation.js';
-import {PLAYER_ANIM_KEYS} from '../animations/ZombieAnimationKeys.js';
+import {PLAYER_ANIM_KEYS} from '../animations/PlayerAnimationKeys.js';
+import {ZOMBIE_ANIM_KEYS} from '../animations/ZombieAnimationKeys.js';
 
 export default class SceneMain extends Phaser.Scene {
 
@@ -150,9 +151,9 @@ export default class SceneMain extends Phaser.Scene {
 
     createEnemiesAnimations(enemeyKey) {
         let animation = new Animation(this.game.anims);
-        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_turn', 18, 26);
-        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_down', 18, 26);
-        animation.createInfiniteAnimation(enemeyKey, 'zombie_1_up', 0, 8);
+        animation.createInfiniteAnimation(enemeyKey, ZOMBIE_ANIM_KEYS.IDLE, 18, 26);
+        animation.createInfiniteAnimation(enemeyKey, ZOMBIE_ANIM_KEYS.DOWN, 18, 26);
+        animation.createInfiniteAnimation(enemeyKey, ZOMBIE_ANIM_KEYS.UP, 0, 8);
     }
 
     createColisionPlayerEnemy() {

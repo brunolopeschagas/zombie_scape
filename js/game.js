@@ -9,7 +9,6 @@ const WORLD_HEIGHT = 480;
 //const WORLD_HEIGHT = window.innerHeight * window.devicePixelRatio;
 //const SCALE_RATIO = WORLD_WIDTH / WORLD_HEIGHT;
 
-
 var config = {
     type: Phaser.CANVAS,
     width: WORLD_WIDTH,

@@ -1,3 +1,4 @@
+import {ZOMBIE_ANIM_KEYS} from '../animations/ZombieAnimationKeys.js';
 export default class Behavior {
 
     constructor(pMinSpeed, pMaxSpeed) {
@@ -17,19 +18,19 @@ export default class Behavior {
         );
     }
 
-    chaseAnimation(pPrey, pHunter) {
-        if (pHunter.y > pPrey.y) {
-            pHunter.anims.play('zombie_1_up', true);
-        } else {
-            pHunter.anims.play('zombie_1_down', true);
-        }
-    }
-
     calcChaseAngle(pHunter, pPrey) {
         this._chaseAngle = Math.atan2(
             pPrey.y - pHunter.y,
             pPrey.x - pHunter.x
         );
+    }
+
+    chaseAnimation(pPrey, pHunter) {
+        if (pHunter.y > pPrey.y) {
+            pHunter.anims.play(ZOMBIE_ANIM_KEYS.UP, true);
+        } else {
+            pHunter.anims.play(ZOMBIE_ANIM_KEYS.DOWN, true);
+        }
     }
 
     getDistanceBetween(pHunter, pPrey) {
@@ -41,7 +42,7 @@ export default class Behavior {
     }
 
     idle(pCacador) {
-        pCacador.anims.play('zombie_1_turn', true);
+        pCacador.anims.play(ZOMBIE_ANIM_KEYS.IDLE, true);
     }
 
     get maxSpeed() {
