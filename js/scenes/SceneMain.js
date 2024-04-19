@@ -15,13 +15,13 @@ export default class SceneMain extends Phaser.Scene {
         this.inputs;
         this.camera;
         this.quantitiOfZombies;
-        this.gameBegin = new Date().getTime() / 1000;
-        this.timeElapsed;
+        this.gameBegin;
         this.gameHud;
         this.spawnPoint;
         this.spriteSheetPlayer = 'player';
         this.spriteSheetZombies1 = 'zombie';
         this.jsonMap;
+        
     }
 
     preload() {
@@ -40,7 +40,7 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     create() {
-
+        this.gameBegin  = new Date().getTime() / 1000;
         const STAMINA_DECREASE_TIME = 10000;
 
         this.jsonMap.makeTileMap();
