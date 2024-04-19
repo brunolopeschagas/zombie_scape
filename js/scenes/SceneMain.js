@@ -46,6 +46,8 @@ export default class SceneMain extends Phaser.Scene {
         this.jsonMap.makeTileMap();
         this.jsonMap.addTileSetImageToMap("tuxmon-sample-32px", this.jsonMap.key);
 
+        console.log(this.jsonMap.map);
+
         this.quantitiOfZombies = this.jsonMap.map.findObject("map_data", mapData => mapData.name === "max_enemies").type;
 
         // Parameters: layer name (or index) from Tiled, tileset, x, y
