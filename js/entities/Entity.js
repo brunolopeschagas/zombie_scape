@@ -6,6 +6,8 @@ export default class Entity extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
         this.scene.physics.world.enableBody(this, 0);
         this._speed = speed;
+        this.body.setSize(16, 16);
+        this.body.setOffset(8, 28);
     }
     
     moveLeft() {

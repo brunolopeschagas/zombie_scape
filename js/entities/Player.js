@@ -11,8 +11,7 @@ export default class Player extends Entity {
         this._hydration = 100;
         this._alive = true;
         this._speed = speed;
-        this.body.setSize(16, 16);
-        this.body.setOffset(8, 28);
+        
     }
 
     lostStamina() {
