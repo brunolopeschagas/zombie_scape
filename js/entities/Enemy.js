@@ -8,6 +8,8 @@ export default class Enemy extends Entity {
         this._speed = pSpeed;
         this.vivo = true;
         this._comportamento = null;
+        this.body.setSize(24, 24);
+        this.body.setOffset(4, 14);
     }
 
     set comportamento(comportamento) {

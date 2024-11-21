@@ -1,0 +1,38 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "zombi_island_2.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "#tuxmon-sample-32px": {
+            "scaleInEditor": 1
+        },
+        "zombi_island_2.tmx": {
+            "scale": 1.1301041666666667,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 428.7215411558669,
+                "y": 320.3244538667158
+            }
+        },
+        "zombi_island_2.tmx#tuxmon-sample-32px": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "/home/bruno/dev/game_dev/phaser3/zombie_scape/assets/tilemaps",
+    "last.imagePath": "/home/bruno/dev/game_dev/phaser3/zombie_scape/assets/tilesets",
+    "map.lastUsedExportFilter": "Ficheiros de mapa JSON (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.layerDataFormat": null,
+    "openFiles": [
+        "zombi_island_2.tmx"
+    ],
+    "project": "zombie_island_2.tiled-project",
+    "recentFiles": [
+        "zombi_island_2.tmx"
+    ],
+    "tileset.embedInMap": true
+}

@@ -30,7 +30,7 @@ export default class SceneMain extends Phaser.Scene {
     }
 
     loadMap() {
-        this.jsonMap = new JsonMap(this, "zs_map_1", "assets/tilemaps/zs_isle.json", "assets/tilesets/tuxmon-sample-32px.png");
+        this.jsonMap = new JsonMap(this, "zombi_island_2", "assets/tilemaps/zombi_island_2.json", "assets/tilesets/tuxmon-sample-32px.png");
         this.jsonMap.loadMap();
     }
 

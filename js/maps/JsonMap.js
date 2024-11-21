@@ -33,7 +33,7 @@ export default class JsonMap extends Map {
         this.addLayer(layer);
     }
 
-    activateColisionToLayer(laierIndex){
-        this.getLayer(laierIndex).setCollisionByExclusion([-1])
+    activateColisionToLayer(layerIndex){
+        this.getLayer(layerIndex).setCollisionByExclusion([-1])
     }
 }
